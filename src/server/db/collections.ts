@@ -9,7 +9,6 @@ import {
   CreditNote,
   DebitNote,
   PDFTemplate,
-  User,
 } from '@/lib/types/document';
 
 export async function getCompaniesCollection(): Promise<Collection<Company>> {
@@ -52,7 +51,5 @@ export async function getPDFTemplatesCollection(): Promise<Collection<PDFTemplat
   return db.collection<PDFTemplate>('pdf_templates');
 }
 
-export async function getUsersCollection(): Promise<Collection<User>> {
-  const db = await getDatabase();
-  return db.collection<User>('users');
-}
+// Users collection removed - using Clerk for authentication
+// User data is now managed by Clerk, with app-specific data stored in publicMetadata

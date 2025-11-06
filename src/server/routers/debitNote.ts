@@ -12,7 +12,7 @@ import { taxCalculationService } from '../services/taxCalculation';
 import { creditDebitService } from '../services/creditDebitService';
 
 export const debitNoteRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(debitNoteListSchema)
     .query(async ({ input, ctx }) => {
       const debitNotes = await getDebitNotesCollection();
@@ -56,7 +56,7 @@ export const debitNoteRouter = router({
       };
     }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const debitNotes = await getDebitNotesCollection();

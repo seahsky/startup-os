@@ -9,7 +9,7 @@ import {
 } from '@/lib/validations/product.schema';
 
 export const productRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(productListSchema)
     .query(async ({ input, ctx }) => {
       const products = await getProductsCollection();
@@ -55,7 +55,7 @@ export const productRouter = router({
       };
     }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const products = await getProductsCollection();
@@ -134,7 +134,7 @@ export const productRouter = router({
       return { success: true };
     }),
 
-  search: publicProcedure
+  search: protectedProcedure
     .input(z.object({ query: z.string() }))
     .query(async ({ input, ctx }) => {
       const products = await getProductsCollection();

@@ -25,7 +25,7 @@ const companyUpdateSchema = z.object({
 });
 
 export const companyRouter = router({
-  get: publicProcedure.query(async ({ ctx }) => {
+  get: protectedProcedure.query(async ({ ctx }) => {
     const companies = await getCompaniesCollection();
 
     const company = await companies.findOne({

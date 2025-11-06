@@ -75,9 +75,7 @@ async function createIndexes(db: Db) {
   await db.collection('pdf_templates').createIndex({ companyId: 1 });
   await db.collection('pdf_templates').createIndex({ companyId: 1, type: 1 });
 
-  // Users indexes
-  await db.collection('users').createIndex({ companyId: 1 });
-  await db.collection('users').createIndex({ email: 1 }, { unique: true });
+  // Users collection removed - using Clerk for authentication
 }
 
 export async function getDatabase(): Promise<Db> {

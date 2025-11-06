@@ -13,7 +13,7 @@ import { documentConversionService } from '../services/documentConversion';
 import { CustomerSnapshot } from '@/lib/types/document';
 
 export const quotationRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(quotationListSchema)
     .query(async ({ input, ctx }) => {
       const quotations = await getQuotationsCollection();
@@ -57,7 +57,7 @@ export const quotationRouter = router({
       };
     }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const quotations = await getQuotationsCollection();

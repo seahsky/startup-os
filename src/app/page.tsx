@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { FileText, FileCheck, FileX, FilePlus } from 'lucide-react';
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/nextjs';
 
 export default function HomePage() {
   return (
@@ -42,12 +43,29 @@ export default function HomePage() {
         </div>
 
         <div className="text-center">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-          >
-            Go to Dashboard
-          </Link>
+          <SignedIn>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            >
+              Go to Dashboard
+            </Link>
+          </SignedIn>
+
+          <SignedOut>
+            <div className="flex items-center justify-center gap-4">
+              <SignInButton mode="modal">
+                <button className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-blue-600 bg-white hover:bg-gray-50 rounded-lg transition-colors border-2 border-blue-600">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="inline-flex items-center justify-center px-8 py-3 text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                  Get Started
+                </button>
+              </SignUpButton>
+            </div>
+          </SignedOut>
         </div>
 
         <div className="mt-16 max-w-4xl mx-auto">

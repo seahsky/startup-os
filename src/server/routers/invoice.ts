@@ -14,7 +14,7 @@ import { paymentService } from '../services/paymentService';
 import { CustomerSnapshot } from '@/lib/types/document';
 
 export const invoiceRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(invoiceListSchema)
     .query(async ({ input, ctx }) => {
       const invoices = await getInvoicesCollection();
@@ -58,7 +58,7 @@ export const invoiceRouter = router({
       };
     }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const invoices = await getInvoicesCollection();

@@ -9,7 +9,7 @@ import {
 } from '@/lib/validations/customer.schema';
 
 export const customerRouter = router({
-  list: publicProcedure
+  list: protectedProcedure
     .input(customerListSchema)
     .query(async ({ input, ctx }) => {
       const customers = await getCustomersCollection();
@@ -50,7 +50,7 @@ export const customerRouter = router({
       };
     }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const customers = await getCustomersCollection();
@@ -129,7 +129,7 @@ export const customerRouter = router({
       return { success: true };
     }),
 
-  search: publicProcedure
+  search: protectedProcedure
     .input(z.object({ query: z.string() }))
     .query(async ({ input, ctx }) => {
       const customers = await getCustomersCollection();
