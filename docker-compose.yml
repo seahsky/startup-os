@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: invoicing-postgres
+    environment:
+      POSTGRES_USER: invoicing
+      POSTGRES_PASSWORD: invoicing_pass
+      POSTGRES_DB: invoicing_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - invoicing_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U invoicing"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:latest
+    container_name: invoicing-ferretdb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      FERRETDB_POSTGRESQL_URL: postgres://invoicing:invoicing_pass@postgres:5432/invoicing_db
+      FERRETDB_TELEMETRY: disabled
+    networks:
+      - invoicing_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  invoicing_network:
+    driver: bridge
