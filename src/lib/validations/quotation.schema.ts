@@ -3,7 +3,9 @@ import { z } from 'zod';
 export const documentItemSchema = z.object({
   productId: z.preprocess(
     (val) => (val === null || val === undefined || val === '' ? undefined : val),
-    z.string().min(1).optional()
+    z.string()
+      .regex(/^[0-9a-fA-F]{24}$/, 'Product ID must be a valid MongoDB ObjectId (24 character hex string)')
+      .optional()
   ),
   name: z.string().min(1, 'Item name is required'),
   description: z.string(),

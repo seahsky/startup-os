@@ -70,8 +70,22 @@ export class TaxCalculationService {
         item.taxRate || 0
       );
 
+      // Safely convert productId to ObjectId with validation
+      let productId: ObjectId | undefined = undefined;
+      if (item.productId && typeof item.productId === 'string' && item.productId.trim() !== '') {
+        try {
+          // Validate format before attempting conversion
+          if (ObjectId.isValid(item.productId)) {
+            productId = new ObjectId(item.productId);
+          }
+        } catch (error) {
+          // If conversion fails, leave productId as undefined
+          console.warn(`Invalid productId format: ${item.productId}`, error);
+        }
+      }
+
       return {
-        productId: item.productId && item.productId.trim() !== '' ? new ObjectId(item.productId) : undefined,
+        productId,
         name: item.name || '',
         description: item.description || '',
         quantity: item.quantity || 0,

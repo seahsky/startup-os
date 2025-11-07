@@ -55,6 +55,11 @@ export function calculateDocumentTotals(items: DocumentItem[]): DocumentCalculat
   };
 }
 
+/**
+ * Calculate totals for a single document item
+ * Note: productId should be a valid ObjectId or undefined.
+ * Validation/conversion should be done before calling this function.
+ */
 export function calculateItemTotals(item: Partial<DocumentItem>): DocumentItem {
   const quantity = item.quantity || 0;
   const unitPrice = item.unitPrice || 0;
