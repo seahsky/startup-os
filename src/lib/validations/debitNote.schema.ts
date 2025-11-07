@@ -6,6 +6,7 @@ export const debitNoteCreateSchema = z.object({
   date: z.date(),
   reason: z.string().min(1, 'Reason is required'),
   items: z.array(documentItemSchema).min(1, 'At least one item is required'),
+  currency: z.string().min(1, 'Currency is required'),
   notes: z.string().optional(),
   status: z.enum(['draft', 'sent', 'applied']).default('draft'),
 });
@@ -15,6 +16,7 @@ export const debitNoteUpdateSchema = z.object({
   date: z.date().optional(),
   reason: z.string().min(1, 'Reason is required').optional(),
   items: z.array(documentItemSchema).min(1).optional(),
+  currency: z.string().optional(),
   notes: z.string().optional(),
   status: z.enum(['draft', 'sent', 'applied']).optional(),
 });

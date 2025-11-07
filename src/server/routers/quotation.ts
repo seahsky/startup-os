@@ -123,6 +123,7 @@ export const quotationRouter = router({
         subtotal: totals.subtotal,
         totalTax: totals.totalTax,
         total: totals.total,
+        currency: input.currency,
         notes: input.notes,
         termsAndConditions: input.termsAndConditions,
         status: input.status,

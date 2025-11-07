@@ -6,6 +6,7 @@ import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { InputField, TextareaField, SelectField } from '@/components/shared/FormField';
+import { CurrencySelect } from '@/components/shared/CurrencySelect';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -18,6 +19,7 @@ export default function NewCustomerPage() {
     taxId: '',
     contactPerson: '',
     notes: '',
+    currency: '',
     status: 'active' as 'active' | 'inactive',
     address: {
       street: '',
@@ -128,6 +130,19 @@ export default function NewCustomerPage() {
                   { value: 'inactive', label: 'Inactive' },
                 ]}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <CurrencySelect
+                label="Preferred Currency (Optional)"
+                value={formData.currency}
+                onChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
+              />
+              <div className="flex items-end">
+                <p className="text-sm text-gray-500 pb-2">
+                  Leave empty to use company default currency
+                </p>
+              </div>
             </div>
 
             <div className="pt-4 border-t">

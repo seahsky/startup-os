@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { ObjectId } from 'mongodb';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
-import { getInvoicesCollection, getCustomersCollection } from '../db/collections';
+import { getInvoicesCollection, getCustomersCollection, getCompaniesCollection } from '../db/collections';
 import {
   invoiceCreateSchema,
   invoiceUpdateSchema,
@@ -125,6 +125,7 @@ export const invoiceRouter = router({
         subtotal: totals.subtotal,
         totalTax: totals.totalTax,
         total: totals.total,
+        currency: input.currency,
         notes: input.notes,
         termsAndConditions: input.termsAndConditions,
         status: input.status,

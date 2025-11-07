@@ -90,10 +90,10 @@ export default function InvoicesPage() {
                       {formatDate(invoice.dueDate)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(invoice.total)}
+                      {formatCurrency(invoice.total, invoice.currency)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(invoice.paymentStatus.amountDue)}
+                      {formatCurrency(invoice.paymentStatus.amountDue, invoice.currency)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={invoice.status} />

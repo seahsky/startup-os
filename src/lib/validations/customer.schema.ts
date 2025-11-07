@@ -16,6 +16,7 @@ export const customerCreateSchema = z.object({
   taxId: z.string().optional(),
   contactPerson: z.string().optional(),
   notes: z.string().optional(),
+  currency: z.string().optional(),
   status: z.enum(['active', 'inactive']).default('active'),
 });
 
@@ -28,6 +29,7 @@ export const customerUpdateSchema = z.object({
   taxId: z.string().optional(),
   contactPerson: z.string().optional(),
   notes: z.string().optional(),
+  currency: z.string().optional(),
   status: z.enum(['active', 'inactive']).optional(),
 });
 

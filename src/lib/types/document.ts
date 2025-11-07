@@ -46,6 +46,7 @@ export interface Customer {
   taxId?: string;
   contactPerson?: string;
   notes?: string;
+  currency?: string;
   status: 'active' | 'inactive';
   createdAt: Date;
   updatedAt: Date;
@@ -99,6 +100,7 @@ export interface Quotation {
   subtotal: number;
   totalTax: number;
   total: number;
+  currency: string;
   notes?: string;
   termsAndConditions?: string;
   status: QuotationStatus;
@@ -137,6 +139,7 @@ export interface Invoice {
   subtotal: number;
   totalTax: number;
   total: number;
+  currency: string;
   notes?: string;
   termsAndConditions?: string;
   status: InvoiceStatus;
@@ -161,6 +164,7 @@ export interface CreditNote {
   subtotal: number;
   totalTax: number;
   total: number;
+  currency: string;
   notes?: string;
   status: CreditNoteStatus;
   createdBy: string;
@@ -183,6 +187,7 @@ export interface DebitNote {
   subtotal: number;
   totalTax: number;
   total: number;
+  currency: string;
   notes?: string;
   status: DebitNoteStatus;
   createdBy: string;

@@ -114,6 +114,7 @@ export const debitNoteRouter = router({
         subtotal: totals.subtotal,
         totalTax: totals.totalTax,
         total: totals.total,
+        currency: input.currency,
         notes: input.notes,
         status: input.status,
         createdBy: ctx.userId,

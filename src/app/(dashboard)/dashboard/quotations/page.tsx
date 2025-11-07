@@ -87,7 +87,7 @@ export default function QuotationsPage() {
                       {formatDate(quotation.validUntil)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(quotation.total)}
+                      {formatCurrency(quotation.total, quotation.currency)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={quotation.status} />

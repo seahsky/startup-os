@@ -53,6 +53,7 @@ export class DocumentConversionService {
       subtotal: quotation.subtotal,
       totalTax: quotation.totalTax,
       total: quotation.total,
+      currency: quotation.currency,
       notes: quotation.notes,
       termsAndConditions: quotation.termsAndConditions,
       status: 'draft',
