@@ -71,7 +71,7 @@ export class TaxCalculationService {
       );
 
       return {
-        productId: item.productId ? new ObjectId(item.productId) : undefined,
+        productId: item.productId && item.productId.trim() !== '' ? new ObjectId(item.productId) : undefined,
         name: item.name || '',
         description: item.description || '',
         quantity: item.quantity || 0,
