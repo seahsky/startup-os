@@ -363,6 +363,146 @@ Only add new dependencies when absolutely necessary. Evaluate whether functional
 **Straightforward Data Flow**
 Data should flow in obvious directions. Avoid circular dependencies, complex callback chains, and magical implicit behavior. Prefer explicit prop passing over context when possible.
 
+## Testing Requirements
+
+### Mandatory Testing Before Handoff
+
+**CRITICAL RULE: All changes MUST be tested before being submitted or handed off to users.**
+
+Never deliver changes without verifying they work correctly. Untested changes are unacceptable and can break the production application. Testing is not optional—it is a required part of every code change.
+
+### Required Testing Steps
+
+Every code change must pass these verification steps before being considered complete:
+
+**1. Type Check** (Required for ALL changes)
+```bash
+npm run type-check
+```
+- Must pass with zero TypeScript errors
+- Verifies type safety across the entire codebase
+- Catches type incompatibilities before runtime
+
+**2. Build Verification** (Required for ALL changes)
+```bash
+npm run build
+```
+- Must complete successfully without errors
+- Verifies the application can be deployed to production
+- Catches import errors, missing dependencies, and SSR issues
+- All pages must render without errors during static generation
+
+**3. Development Server Test** (Required for UI/Component changes)
+```bash
+npm run dev
+```
+- Start the development server
+- Navigate to affected pages/features
+- Verify the changes work as expected visually
+- Test user interactions (clicks, form submissions, navigation)
+- Check browser console for runtime errors
+- Test on different screen sizes if UI changes affect layout
+
+### Testing Requirements by Change Type
+
+**TypeScript Type Changes:**
+- ✅ Type check must pass
+- ✅ Build must succeed
+- ✅ Verify affected files compile without errors
+
+**Component/UI Changes:**
+- ✅ Type check must pass
+- ✅ Build must succeed
+- ✅ Development server visual verification
+- ✅ Test user interactions
+- ✅ Verify responsive behavior
+- ✅ Check accessibility (keyboard navigation, screen reader labels)
+
+**API/Backend Changes:**
+- ✅ Type check must pass
+- ✅ Build must succeed
+- ✅ Test API endpoints manually or with API client
+- ✅ Verify database operations
+- ✅ Test error handling
+- ✅ Verify authentication/authorization
+
+**Configuration Changes:**
+- ✅ Build must succeed
+- ✅ Development server must start
+- ✅ Verify configuration takes effect
+
+**Bug Fixes:**
+- ✅ All standard tests for change type
+- ✅ **CRITICAL:** Reproduce the bug first
+- ✅ Verify the bug is actually fixed
+- ✅ Test edge cases related to the bug
+- ✅ Ensure the fix doesn't introduce new issues
+
+### Test Verification Checklist
+
+Before marking any work as complete, verify:
+
+- [ ] **TypeScript compiles:** `npm run type-check` passes with zero errors
+- [ ] **Build succeeds:** `npm run build` completes without errors
+- [ ] **No runtime errors:** Development server runs without console errors
+- [ ] **Feature works:** Manually tested the changed functionality
+- [ ] **No regressions:** Related features still work correctly
+- [ ] **Documentation updated:** If behavior changed, docs are updated
+
+### What "Tested" Means
+
+A change is only considered "tested" when:
+
+1. **All required commands pass** without errors or warnings
+2. **Manual verification completed** for affected features
+3. **Related functionality verified** to ensure no regressions
+4. **Error cases tested** (invalid input, edge cases, etc.)
+5. **Changes work in production-like environment** (build output, not just dev mode)
+
+### Testing Anti-Patterns to Avoid
+
+**❌ NEVER:**
+- Submit changes without running the build
+- Assume type checks pass without running them
+- Skip manual testing because "it's a small change"
+- Test only the happy path (always test error cases)
+- Test only in development mode (always verify build succeeds)
+- Hand off work with known errors or warnings
+
+**✅ ALWAYS:**
+- Run all required verification steps
+- Test the actual user-facing behavior
+- Verify the build succeeds before submitting
+- Check for console errors during testing
+- Test edge cases and error conditions
+- Document any known limitations
+
+### Testing During Development
+
+**Test Early and Often:**
+- Don't wait until the end to test
+- Run type check frequently during development
+- Test in the browser as you build features
+- Catch errors early when they're easier to fix
+
+**Iterative Testing:**
+1. Make a small change
+2. Run type check to verify types
+3. Test in browser to verify behavior
+4. Fix any issues immediately
+5. Repeat until feature is complete
+6. Run full build verification before handoff
+
+### Emergency Fixes Exception
+
+Even for urgent production fixes:
+- **Minimum required:** Type check + Build must pass
+- Test the specific issue being fixed
+- Verify the fix works before deploying
+- Never skip testing, even under time pressure
+
+**Remember:** A working but slow fix is better than a fast but broken fix.
+
 ## File Organization
 
 ### Directory Structure
@@ -607,10 +747,73 @@ Extract common CRUD patterns into generic factories to eliminate duplication. St
 Start PostgreSQL and FerretDB using the provided Docker Compose file. Run the development server which enables hot reload. Use the database seed script to populate initial data for testing. Set up environment variables in a local env file.
 
 ### Code Quality
-Run TypeScript type checking before committing changes. Use the Next.js linter to catch common issues. Format code consistently. Write meaningful commit messages that explain why changes were made, not just what changed.
+
+**Testing is Mandatory:**
+All changes must pass testing verification before being considered complete. This is not negotiable.
+
+**Pre-Submission Checklist:**
+Before submitting any changes, you must:
+
+1. **Run Type Check:**
+   ```bash
+   npm run type-check
+   ```
+   - Must pass with zero errors
+   - Fix all TypeScript issues before proceeding
+
+2. **Run Build:**
+   ```bash
+   npm run build
+   ```
+   - Must complete successfully
+   - All pages must render without errors
+   - Fix all build issues before proceeding
+
+3. **Test Functionality:**
+   - Start development server: `npm run dev`
+   - Manually test changed features
+   - Verify related features still work
+   - Check browser console for errors
+
+4. **Code Style:**
+   - Use the Next.js linter to catch common issues
+   - Format code consistently
+   - Follow established patterns
+
+5. **Documentation:**
+   - Write meaningful commit messages explaining why changes were made
+   - Update documentation if behavior changed
+   - Add comments for complex logic
+
+**Never submit changes that:**
+- Fail type checking
+- Fail to build
+- Have untested functionality
+- Produce console errors
+- Break existing features
 
 ### Feature Development
-Create feature branches for new work. Keep changes focused and atomic. Test thoroughly before merging. Update this documentation when introducing new patterns or architectural decisions.
+
+**Development Process with Testing:**
+
+1. **Plan:** Understand requirements and plan implementation
+2. **Implement:** Write code following established patterns
+3. **Test Early:** Run type check frequently during development
+4. **Test Often:** Verify changes in browser as you build
+5. **Build Verify:** Run full build before considering work complete
+6. **Manual Test:** Test all affected functionality thoroughly
+7. **Regression Test:** Verify related features still work
+8. **Document:** Update documentation if needed
+9. **Submit:** Only after all tests pass
+
+**Branch Strategy:**
+- Create feature branches for new work
+- Keep changes focused and atomic
+- Test thoroughly before merging
+- Update this documentation when introducing new patterns or architectural decisions
+
+**Testing is NOT Optional:**
+Every feature, bug fix, or change must be tested before being merged. Untested code will be rejected.
 
 ### Database Changes
 When modifying schema structure, consider backward compatibility. Plan for data migration if changing existing document structures. Test migrations thoroughly with production-like data volumes.
@@ -621,6 +824,18 @@ Maintain backward compatibility when possible. Version breaking changes appropri
 ## Conclusion
 
 This application follows established patterns consistently throughout the codebase. Future development should maintain these patterns for consistency and maintainability. When facing implementation decisions, favor simplicity, type safety, and clear separation of concerns. Extract common code to avoid duplication. Keep business logic in services. Validate at API boundaries. Filter by company identifier always.
+
+**Most Importantly: Always Test Before Handoff**
+
+Testing is the most critical step in the development workflow. Every change, no matter how small, must be verified before being submitted:
+
+- ✅ Run `npm run type-check` - Must pass
+- ✅ Run `npm run build` - Must succeed
+- ✅ Manually test the feature - Must work correctly
+- ✅ No console errors - Browser console must be clean
+- ✅ No regressions - Related features must still work
+
+**Untested changes are incomplete changes.** The build verification step catches issues early, prevents broken deployments, and ensures code quality. Make testing a habit, not an afterthought.
 
 The architecture supports scaling to larger teams and larger codebases. The type safety catches errors at compile time. The service layer enables testing without HTTP requests. The monolithic structure keeps deployment simple while the layered organization allows future extraction of services if needed.
 
