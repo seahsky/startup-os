@@ -24,16 +24,12 @@
  */
 
 import Dinero from 'dinero.js';
+import type { CurrencyCode } from './currency';
 
 /**
  * Money type - represents a monetary value with currency
  */
 export type Money = Dinero.Dinero;
-
-/**
- * Currency code type - ISO 4217 three-letter codes
- */
-export type CurrencyCode = string;
 
 /**
  * Creates a Money object from an amount in cents (minor units)
@@ -123,7 +119,7 @@ export const getCents = (money: Money): number => {
  * getCurrency(money) // 'USD'
  */
 export const getCurrency = (money: Money): CurrencyCode => {
-  return money.getCurrency();
+  return money.getCurrency() as CurrencyCode;
 };
 
 /**

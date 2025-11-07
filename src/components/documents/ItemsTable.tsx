@@ -26,6 +26,9 @@ interface ItemsTableProps {
 }
 
 export function ItemsTable({ items, onChange, currency = 'USD' }: ItemsTableProps) {
+  // Ensure currency is never empty - fallback to USD
+  const safeCurrency = currency || 'USD';
+
   const addItem = () => {
     onChange([
       ...items,
@@ -164,7 +167,7 @@ export function ItemsTable({ items, onChange, currency = 'USD' }: ItemsTableProp
                     />
                   </td>
                   <td className="py-3 px-2 text-right font-medium">
-                    {formatCurrency(item.total || 0, currency)}
+                    {formatCurrency(item.total || 0, safeCurrency)}
                   </td>
                   <td className="py-3 px-2">
                     <Button
@@ -199,15 +202,15 @@ export function ItemsTable({ items, onChange, currency = 'USD' }: ItemsTableProp
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Subtotal:</span>
-              <span className="font-medium">{formatCurrency(totals.subtotal, currency)}</span>
+              <span className="font-medium">{formatCurrency(totals.subtotal, safeCurrency)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Tax:</span>
-              <span className="font-medium">{formatCurrency(totals.totalTax, currency)}</span>
+              <span className="font-medium">{formatCurrency(totals.totalTax, safeCurrency)}</span>
             </div>
             <div className="flex justify-between text-lg font-semibold pt-2 border-t border-gray-200">
               <span>Total:</span>
-              <span>{formatCurrency(totals.total, currency)}</span>
+              <span>{formatCurrency(totals.total, safeCurrency)}</span>
             </div>
           </div>
         </div>

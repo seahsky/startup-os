@@ -35,7 +35,7 @@
 import React from 'react';
 import { formatCurrencyAccessible } from '@/lib/utils/currency';
 import type { CurrencyCode, CurrencyDisplayMode } from '@/lib/types/currency';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cn';
 
 interface CurrencyDisplayProps {
   /**
