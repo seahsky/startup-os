@@ -7,8 +7,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { LoadingPage } from '@/components/shared/LoadingSpinner';
 import { ArrowLeft, FileText, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { formatCurrency } from '@/lib/utils/currency';
 import { formatDate } from '@/lib/utils/date';
+import {
+  CurrencyTableCell,
+  CurrencyTotal,
+  CurrencyFormValue,
+} from '@/components/shared/CurrencyDisplay';
+import type { CurrencyCode } from '@/lib/types/currency';
 
 interface PageProps {
   params: { id: string };
@@ -146,24 +151,57 @@ export default function QuotationDetailPage(props: PageProps) {
                       <div className="text-sm text-gray-600">{item.description}</div>
                     </td>
                     <td className="text-right">{item.quantity}</td>
-                    <td className="text-right">{formatCurrency(item.unitPrice)}</td>
-                    <td className="text-right">{formatCurrency(item.taxAmount)}</td>
-                    <td className="text-right font-medium">{formatCurrency(item.total)}</td>
+                    <td className="text-right">
+                      <CurrencyTableCell
+                        amount={item.unitPrice}
+                        currency={quotation.currency as CurrencyCode}
+                      />
+                    </td>
+                    <td className="text-right">
+                      <CurrencyTableCell
+                        amount={item.taxAmount}
+                        currency={quotation.currency as CurrencyCode}
+                      />
+                    </td>
+                    <td className="text-right">
+                      <CurrencyTableCell
+                        amount={item.total}
+                        currency={quotation.currency as CurrencyCode}
+                        className="font-medium"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot className="font-semibold">
                 <tr>
                   <td colSpan={4} className="text-right py-2">Subtotal:</td>
-                  <td className="text-right py-2">{formatCurrency(quotation.subtotal)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyFormValue
+                      amount={quotation.subtotal}
+                      currency={quotation.currency as CurrencyCode}
+                      className="font-semibold"
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td colSpan={4} className="text-right py-2">Tax:</td>
-                  <td className="text-right py-2">{formatCurrency(quotation.totalTax)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyFormValue
+                      amount={quotation.totalTax}
+                      currency={quotation.currency as CurrencyCode}
+                      className="font-semibold"
+                    />
+                  </td>
                 </tr>
                 <tr className="text-lg">
                   <td colSpan={4} className="text-right py-2">Total:</td>
-                  <td className="text-right py-2">{formatCurrency(quotation.total)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyTotal
+                      amount={quotation.total}
+                      currency={quotation.currency as CurrencyCode}
+                    />
+                  </td>
                 </tr>
               </tfoot>
             </table>

@@ -46,6 +46,290 @@ Customer information is captured and stored within transaction documents at crea
 ### Service Layer for Business Logic
 Complex business operations like tax calculations, document numbering, payment recording, and document conversions are encapsulated in stateless service classes. This keeps routers thin and focused on request handling while making business logic reusable and testable.
 
+## Currency Handling
+
+The application implements comprehensive, standards-compliant currency handling using dinero.js for precision and proper formatting for all supported currencies.
+
+### Monetary Precision with dinero.js
+
+All monetary calculations use dinero.js to eliminate floating-point precision errors. The Money type system provides type-safe wrappers around dinero.js operations.
+
+**Core Principles:**
+- Store amounts in cents (minor units) internally to avoid floating-point errors
+- Always include currency information with monetary values
+- Use immutable operations for all calculations
+- Validate currency matching to prevent mixing USD with EUR
+
+**Money Type Location:** `src/lib/types/money.ts`
+
+**Key Functions:**
+```typescript
+// Creating Money objects
+fromDecimal(19.99, 'USD') // Converts dollars to Money object
+createMoney(1999, 'USD')  // Creates from cents directly
+
+// Calculations
+add(money1, money2)       // Addition (validates same currency)
+subtract(money1, money2)  // Subtraction
+multiply(money, 3)        // Multiplication
+percentage(money, 0.0825) // Calculate percentage (8.25%)
+
+// Conversion
+toDecimal(money)          // Convert to decimal for display
+getCents(money)           // Get cents for database storage
+```
+
+**Example Usage:**
+```typescript
+import { fromDecimal, add, multiply, toDecimal } from '@/lib/types/money';
+
+const unitPrice = fromDecimal(19.99, 'USD');
+const quantity = 3;
+const subtotal = multiply(unitPrice, quantity); // $59.97 - precise!
+
+const tax = multiply(subtotal, 0.0825); // Calculate 8.25% tax
+const total = add(subtotal, tax); // Add tax to subtotal
+
+const displayAmount = toDecimal(total); // Convert to 64.92 for display
+```
+
+### Supported Currencies
+
+The application supports 40+ currencies with full metadata including symbols, decimal places, and formatting rules.
+
+**Currency Constants Location:** `src/lib/constants/currencies.ts`
+
+**Standard Two-Decimal Currencies:**
+USD, EUR, GBP, CAD, AUD, SGD, MYR, CNY, INR, BRL, and most others
+
+**Zero-Decimal Currencies (no fractional units):**
+- JPY (Japanese Yen) - displays as ¥1,234 not ¥1,234.00
+- KRW (South Korean Won) - displays as ₩1,234
+- VND (Vietnamese Dong) - displays as ₫1,234
+- IDR (Indonesian Rupiah) - displays as Rp1,234
+- CLP (Chilean Peso) - displays as $1,234
+
+**Three-Decimal Currencies (Middle Eastern):**
+- BHD (Bahraini Dinar) - displays as BD 1.234
+- KWD (Kuwaiti Dinar) - displays as KD 1.234
+- OMR (Omani Rial) - displays as OMR 1.234
+- JOD (Jordanian Dinar) - displays as JD 1.234
+- TND (Tunisian Dinar) - displays as DT 1.234
+
+All currency formatting automatically handles the correct number of decimal places based on currency type.
+
+### Currency Display Standards
+
+The application follows ISO 4217, Unicode CLDR, and WCAG accessibility standards for currency display.
+
+**Display Modes:**
+
+**Symbol Mode** (compact for tables):
+```typescript
+formatCurrencyWithSymbol(1234.56, 'USD') // "$1,234.56"
+formatCurrencyWithSymbol(1234.56, 'EUR') // "€1,234.56"
+formatCurrencyWithSymbol(1234, 'JPY')    // "¥1,234" (auto 0 decimals)
+```
+
+**Code Mode** (clear for forms and documents):
+```typescript
+formatCurrencyWithCode(1234.56, 'USD') // "USD 1,234.56"
+formatCurrencyWithCode(1234.56, 'EUR') // "EUR 1,234.56"
+formatCurrencyWithCode(1234, 'JPY')    // "JPY 1,234"
+```
+
+**Formatting Utilities Location:** `src/lib/utils/currency.ts`
+
+### Currency Display Components
+
+React components with built-in accessibility support.
+
+**Component Location:** `src/components/shared/CurrencyDisplay.tsx`
+
+**Available Components:**
+
+**CurrencyDisplay** - Main component with full control:
+```tsx
+<CurrencyDisplay
+  amount={1234.56}
+  currency="USD"
+  mode="symbol" // or "code"
+  showAccessibility={true} // Adds aria-labels for screen readers
+/>
+```
+
+**CurrencyTableCell** - Pre-styled for tables (symbol mode):
+```tsx
+<CurrencyTableCell amount={item.total} currency={invoice.currency} />
+```
+
+**CurrencyTotal** - Pre-styled for totals/summaries (code mode, emphasized):
+```tsx
+<CurrencyTotal amount={invoice.total} currency={invoice.currency} />
+```
+
+**CurrencyFormValue** - Pre-styled for forms (code mode, clear):
+```tsx
+<CurrencyFormValue amount={payment.amount} currency={invoice.currency} />
+```
+
+### Accessibility Features
+
+All currency displays include screen reader support following WCAG guidelines:
+
+```tsx
+<CurrencyDisplay amount={1234.56} currency="USD" />
+// Renders: $1,234.56
+// Aria-label: "1,234 US dollars and 56 cents"
+```
+
+This ensures users with screen readers receive clear, spoken currency information.
+
+### Currency in Calculations
+
+All calculation utilities use dinero.js internally for precision.
+
+**Calculation Utilities Location:** `src/lib/utils/calculations.ts`
+
+**Key Functions:**
+```typescript
+// Line item calculation with currency
+calculateLineItem(quantity, unitPrice, taxRate, currency)
+// Returns: { subtotal, taxAmount, total } - all precise
+
+// Document totals with currency
+calculateDocumentTotals(items, currency)
+// Returns: { subtotal, totalTax, total, taxBreakdown }
+
+// Payment calculations
+calculateAmountDue(total, amountPaid, currency)
+// Returns: precise remaining balance
+```
+
+**Invoice Calculations Location:** `src/server/services/invoiceCalculations.ts`
+
+Provides invoice-specific calculations including payment tracking, payment status determination, late fees, and partial payment allocation.
+
+### Currency Best Practices
+
+**Always Pass Currency:**
+Every monetary value should be accompanied by its currency code. Never assume USD.
+
+```tsx
+// ❌ Bad - assumes USD
+<span>{formatCurrency(amount)}</span>
+
+// ✅ Good - explicit currency
+<CurrencyDisplay amount={amount} currency={invoice.currency} />
+```
+
+**Use Correct Display Mode:**
+- **Symbol mode** for tables and compact displays
+- **Code mode** for forms, documents, and when clarity is critical
+- **Always show currency** in mixed-currency lists (dashboard, reports)
+
+**Store Currency with Documents:**
+Every invoice, quotation, credit note, and debit note has a currency field. This enables multi-currency support and preserves historical accuracy.
+
+**Validate Currency Matching:**
+When performing calculations, dinero.js automatically validates that currencies match:
+```typescript
+const usd = fromDecimal(100, 'USD');
+const eur = fromDecimal(100, 'EUR');
+add(usd, eur); // ✅ Throws error - prevents mixing currencies
+```
+
+**Use Type-Safe Currency Codes:**
+```typescript
+import type { CurrencyCode } from '@/lib/types/currency';
+
+const currency: CurrencyCode = 'USD'; // ✅ Type-safe
+const currency = 'INVALID'; // ❌ TypeScript error
+```
+
+### Currency Type Definitions
+
+**Types Location:** `src/lib/types/currency.ts`
+
+```typescript
+// Type-safe currency codes
+type CurrencyCode = 'USD' | 'EUR' | 'GBP' | ... // 40+ currencies
+
+// Display modes
+type CurrencyDisplayMode = 'symbol' | 'code';
+
+// Formatted result with accessibility
+interface FormattedCurrency {
+  display: string;
+  ariaLabel: string;
+  currency: CurrencyCode;
+  amount: number;
+}
+```
+
+### Common Currency Patterns
+
+**In tRPC Routers:**
+```typescript
+// Pass currency to calculation functions
+const totals = calculateDocumentTotals(items, input.currency);
+```
+
+**In React Components:**
+```tsx
+// Always use CurrencyDisplay components
+<CurrencyDisplay
+  amount={invoice.total}
+  currency={invoice.currency as CurrencyCode}
+  mode="code"
+/>
+```
+
+**In Database Storage:**
+```typescript
+// Store amounts as numbers (in decimal form)
+// Store currency as ISO 4217 code
+{
+  total: 1234.56,
+  currency: 'USD'
+}
+```
+
+**In Forms:**
+```typescript
+// ItemsTable component accepts currency prop
+<ItemsTable
+  items={items}
+  onChange={setItems}
+  currency={selectedCurrency}
+/>
+```
+
+### Testing Currency Handling
+
+When testing currency features:
+
+**Test Different Currency Types:**
+- Standard currencies (USD, EUR, GBP)
+- Zero-decimal currencies (JPY, KRW)
+- Three-decimal currencies (BHD, KWD)
+
+**Test Calculations:**
+- Verify no floating-point errors
+- Test that currency mismatches are caught
+- Verify totals sum correctly
+
+**Test Display:**
+- Check symbol vs code modes
+- Verify decimal places are correct
+- Test accessibility labels with screen readers
+
+**Test Edge Cases:**
+- Zero amounts
+- Negative amounts
+- Very large amounts
+- Mixed-currency lists
+
 ## Coding Standards
 
 ### DRY Principle (Don't Repeat Yourself)

@@ -7,8 +7,14 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { LoadingPage } from '@/components/shared/LoadingSpinner';
 import { ArrowLeft, Trash2, DollarSign } from 'lucide-react';
 import Link from 'next/link';
-import { formatCurrency } from '@/lib/utils/currency';
 import { formatDate } from '@/lib/utils/date';
+import {
+  CurrencyDisplay,
+  CurrencyTableCell,
+  CurrencyTotal,
+  CurrencyFormValue,
+} from '@/components/shared/CurrencyDisplay';
+import type { CurrencyCode } from '@/lib/types/currency';
 
 interface PageProps {
   params: { id: string };
@@ -84,7 +90,13 @@ export default function InvoiceDetailPage(props: PageProps) {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Amount Due</p>
-                <p className="font-semibold text-lg">{formatCurrency(invoice.paymentStatus.amountDue)}</p>
+                <div className="font-semibold text-lg">
+                  <CurrencyDisplay
+                    amount={invoice.paymentStatus.amountDue}
+                    currency={invoice.currency as CurrencyCode}
+                    mode="code"
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
@@ -133,32 +145,77 @@ export default function InvoiceDetailPage(props: PageProps) {
                       <div className="text-sm text-gray-600">{item.description}</div>
                     </td>
                     <td className="text-right">{item.quantity}</td>
-                    <td className="text-right">{formatCurrency(item.unitPrice)}</td>
-                    <td className="text-right">{formatCurrency(item.taxAmount)}</td>
-                    <td className="text-right font-medium">{formatCurrency(item.total)}</td>
+                    <td className="text-right">
+                      <CurrencyTableCell
+                        amount={item.unitPrice}
+                        currency={invoice.currency as CurrencyCode}
+                      />
+                    </td>
+                    <td className="text-right">
+                      <CurrencyTableCell
+                        amount={item.taxAmount}
+                        currency={invoice.currency as CurrencyCode}
+                      />
+                    </td>
+                    <td className="text-right">
+                      <CurrencyTableCell
+                        amount={item.total}
+                        currency={invoice.currency as CurrencyCode}
+                        className="font-medium"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot className="font-semibold">
                 <tr>
                   <td colSpan={4} className="text-right py-2">Subtotal:</td>
-                  <td className="text-right py-2">{formatCurrency(invoice.subtotal)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyFormValue
+                      amount={invoice.subtotal}
+                      currency={invoice.currency as CurrencyCode}
+                      className="font-semibold"
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td colSpan={4} className="text-right py-2">Tax:</td>
-                  <td className="text-right py-2">{formatCurrency(invoice.totalTax)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyFormValue
+                      amount={invoice.totalTax}
+                      currency={invoice.currency as CurrencyCode}
+                      className="font-semibold"
+                    />
+                  </td>
                 </tr>
                 <tr className="text-lg">
                   <td colSpan={4} className="text-right py-2">Total:</td>
-                  <td className="text-right py-2">{formatCurrency(invoice.total)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyTotal
+                      amount={invoice.total}
+                      currency={invoice.currency as CurrencyCode}
+                    />
+                  </td>
                 </tr>
                 <tr className="text-green-600">
                   <td colSpan={4} className="text-right py-2">Amount Paid:</td>
-                  <td className="text-right py-2">{formatCurrency(invoice.paymentStatus.amountPaid)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyFormValue
+                      amount={invoice.paymentStatus.amountPaid}
+                      currency={invoice.currency as CurrencyCode}
+                      className="font-semibold text-green-600"
+                    />
+                  </td>
                 </tr>
                 <tr className="text-red-600">
                   <td colSpan={4} className="text-right py-2">Amount Due:</td>
-                  <td className="text-right py-2">{formatCurrency(invoice.paymentStatus.amountDue)}</td>
+                  <td className="text-right py-2">
+                    <CurrencyFormValue
+                      amount={invoice.paymentStatus.amountDue}
+                      currency={invoice.currency as CurrencyCode}
+                      className="font-semibold text-red-600"
+                    />
+                  </td>
                 </tr>
               </tfoot>
             </table>
@@ -182,7 +239,13 @@ export default function InvoiceDetailPage(props: PageProps) {
                         <p className="text-xs text-gray-500">Ref: {payment.reference}</p>
                       )}
                     </div>
-                    <p className="font-semibold">{formatCurrency(payment.amount)}</p>
+                    <div className="font-semibold">
+                      <CurrencyDisplay
+                        amount={payment.amount}
+                        currency={invoice.currency as CurrencyCode}
+                        mode="code"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

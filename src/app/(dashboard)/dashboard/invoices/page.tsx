@@ -3,8 +3,9 @@
 import { trpc } from '@/lib/trpc/client';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils/currency';
 import { formatDate } from '@/lib/utils/date';
+import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import type { CurrencyCode } from '@/lib/types/currency';
 
 export default function InvoicesPage() {
   const { data, isLoading } = trpc.invoice.list.useQuery({
@@ -90,10 +91,18 @@ export default function InvoicesPage() {
                       {formatDate(invoice.dueDate)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(invoice.total, invoice.currency)}
+                      <CurrencyDisplay
+                        amount={invoice.total}
+                        currency={invoice.currency as CurrencyCode}
+                        mode="code"
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(invoice.paymentStatus.amountDue, invoice.currency)}
+                      <CurrencyDisplay
+                        amount={invoice.paymentStatus.amountDue}
+                        currency={invoice.currency as CurrencyCode}
+                        mode="code"
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={invoice.status} />

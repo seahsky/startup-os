@@ -1,8 +1,9 @@
 'use client';
 
 import { trpc } from '@/lib/trpc/client';
-import { formatCurrency } from '@/lib/utils/currency';
 import { FileText, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
+import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import type { CurrencyCode } from '@/lib/types/currency';
 
 export default function DashboardPage() {
   // Example: Fetch recent invoices
@@ -73,7 +74,11 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-medium text-gray-900">
-                    {formatCurrency(invoice.total)}
+                    <CurrencyDisplay
+                      amount={invoice.total}
+                      currency={invoice.currency as CurrencyCode}
+                      mode="code"
+                    />
                   </p>
                   <StatusBadge status={invoice.status} />
                 </div>

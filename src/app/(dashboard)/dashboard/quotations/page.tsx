@@ -3,8 +3,9 @@
 import { trpc } from '@/lib/trpc/client';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils/currency';
 import { formatDate } from '@/lib/utils/date';
+import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import type { CurrencyCode } from '@/lib/types/currency';
 
 export default function QuotationsPage() {
   const { data, isLoading } = trpc.quotation.list.useQuery({
@@ -87,7 +88,11 @@ export default function QuotationsPage() {
                       {formatDate(quotation.validUntil)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
-                      {formatCurrency(quotation.total, quotation.currency)}
+                      <CurrencyDisplay
+                        amount={quotation.total}
+                        currency={quotation.currency as CurrencyCode}
+                        mode="code"
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={quotation.status} />
