@@ -1,0 +1,18 @@
+# robots.txt for Startup-OS Invoicing Application
+
+# Allow all bots to access public pages
+User-agent: *
+Allow: /
+
+# Disallow authenticated/dashboard areas
+Disallow: /dashboard/
+Disallow: /sign-in/
+Disallow: /sign-up/
+Disallow: /onboarding/
+
+# Disallow API routes
+Disallow: /api/
+Disallow: /trpc/
+
+# Crawl delay (be nice to the server)
+Crawl-delay: 1
