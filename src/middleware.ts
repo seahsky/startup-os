@@ -14,7 +14,11 @@ const isOnboardingRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
+  // Debug: Log that middleware is running (remove in production)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Middleware] Processing:', req.nextUrl.pathname);
+  }
+
   const url = req.nextUrl.clone();
 
   // Allow public routes without authentication
@@ -24,6 +28,9 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Protect all other routes - require authentication
   await auth.protect();
+
+  // Get userId after protection succeeds
+  const { userId } = await auth();
 
   // After authentication, check if user needs onboarding
   if (userId) {
@@ -53,5 +60,8 @@ export const config = {
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     // Always run for API routes (including tRPC)
     '/(api|trpc)(.*)',
+    // Explicitly include app routes
+    '/dashboard/:path*',
+    '/onboarding/:path*',
   ],
 };
