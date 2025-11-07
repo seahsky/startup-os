@@ -103,7 +103,7 @@ export interface Quotation {
   termsAndConditions?: string;
   status: QuotationStatus;
   convertedToInvoiceId?: ObjectId;
-  createdBy: ObjectId;
+  createdBy: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -141,7 +141,7 @@ export interface Invoice {
   termsAndConditions?: string;
   status: InvoiceStatus;
   paymentStatus: PaymentStatus;
-  createdBy: ObjectId;
+  createdBy: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -163,7 +163,7 @@ export interface CreditNote {
   total: number;
   notes?: string;
   status: CreditNoteStatus;
-  createdBy: ObjectId;
+  createdBy: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -185,7 +185,7 @@ export interface DebitNote {
   total: number;
   notes?: string;
   status: DebitNoteStatus;
-  createdBy: ObjectId;
+  createdBy: string;
   createdAt: Date;
   updatedAt: Date;
 }
