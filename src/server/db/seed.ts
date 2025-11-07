@@ -19,7 +19,6 @@ async function seed() {
       db.collection('credit_notes').deleteMany({}),
       db.collection('debit_notes').deleteMany({}),
       db.collection('pdf_templates').deleteMany({}),
-      db.collection('users').deleteMany({}),
     ]);
 
     // Create default company
@@ -196,19 +195,6 @@ async function seed() {
     ];
 
     await db.collection('products').insertMany(products);
-
-    // Create default user
-    console.log('👤 Creating user...');
-    await db.collection('users').insertOne({
-      _id: new ObjectId('507f1f77bcf86cd799439012'),
-      companyId: company._id,
-      email: 'admin@democompany.com',
-      name: 'Admin User',
-      role: 'admin',
-      passwordHash: 'dummy-hash', // In production, use proper password hashing
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
 
     console.log('✅ Database seeded successfully!');
     console.log(`   - Company: ${company.name}`);

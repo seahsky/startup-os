@@ -1,30 +1,87 @@
-import { z } from 'zod';
 import { ObjectId } from 'mongodb';
+import { TRPCError } from '@trpc/server';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { getCompaniesCollection } from '../db/collections';
-import { addressSchema } from '@/lib/validations/customer.schema';
-
-const companySettingsSchema = z.object({
-  invoicePrefix: z.string().min(1),
-  quotationPrefix: z.string().min(1),
-  creditNotePrefix: z.string().min(1),
-  debitNotePrefix: z.string().min(1),
-  defaultTaxRate: z.number().min(0).max(100),
-  paymentTerms: z.string(),
-  defaultDueDays: z.number().min(0),
-});
-
-const companyUpdateSchema = z.object({
-  name: z.string().min(1).optional(),
-  email: z.string().email().optional(),
-  phone: z.string().optional(),
-  address: addressSchema.optional(),
-  taxId: z.string().optional(),
-  logo: z.string().optional(),
-  currency: z.string().optional(),
-});
+import {
+  companyCreateSchema,
+  companyUpdateSchema,
+  companySettingsUpdateSchema
+} from '@/lib/validations/company.schema';
+import { assignUserToCompany } from '@/lib/clerk-utils';
+import type { Company } from '@/lib/types/document';
 
 export const companyRouter = router({
+  create: publicProcedure
+    .input(companyCreateSchema)
+    .mutation(async ({ input, ctx }) => {
+      // User must be authenticated to create a company
+      if (!ctx.userId) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You must be logged in to create a company',
+        });
+      }
+
+      // User should not already have a company
+      if (ctx.companyId) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You are already assigned to a company',
+        });
+      }
+
+      const companies = await getCompaniesCollection();
+
+      // Create default settings if not provided
+      const defaultSettings = {
+        invoicePrefix: 'INV-',
+        quotationPrefix: 'QUO-',
+        creditNotePrefix: 'CN-',
+        debitNotePrefix: 'DN-',
+        nextInvoiceNumber: 1001,
+        nextQuotationNumber: 1001,
+        nextCreditNoteNumber: 1001,
+        nextDebitNoteNumber: 1001,
+        defaultTaxRate: input.settings?.defaultTaxRate ?? 10,
+        paymentTerms: input.settings?.paymentTerms ?? 'Net 30',
+        defaultDueDays: input.settings?.defaultDueDays ?? 30,
+      };
+
+      // Build the company document
+      const newCompany: Company = {
+        _id: new ObjectId(),
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        address: input.address,
+        taxId: input.taxId,
+        logo: input.logo,
+        currency: input.currency || 'USD',
+        settings: input.settings ? { ...defaultSettings, ...input.settings } : defaultSettings,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Insert the company into the database
+      const result = await companies.insertOne(newCompany);
+
+      if (!result.acknowledged) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create company',
+        });
+      }
+
+      // Assign the user to the new company as admin
+      await assignUserToCompany(
+        ctx.userId,
+        newCompany._id.toString(),
+        'admin'
+      );
+
+      return newCompany;
+    }),
+
   get: protectedProcedure.query(async ({ ctx }) => {
     const companies = await getCompaniesCollection();
 
@@ -63,7 +120,7 @@ export const companyRouter = router({
     }),
 
   updateSettings: protectedProcedure
-    .input(companySettingsSchema.partial())
+    .input(companySettingsUpdateSchema)
     .mutation(async ({ input, ctx }) => {
       const companies = await getCompaniesCollection();
 
