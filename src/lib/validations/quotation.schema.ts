@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 export const documentItemSchema = z.object({
-  productId: z.string().min(1).optional().or(z.literal('').transform(() => undefined)),
+  productId: z.preprocess(
+    (val) => (val === null || val === undefined || val === '' ? undefined : val),
+    z.string().min(1).optional()
+  ),
   name: z.string().min(1, 'Item name is required'),
   description: z.string(),
   quantity: z.number().min(0.01, 'Quantity must be greater than 0'),
