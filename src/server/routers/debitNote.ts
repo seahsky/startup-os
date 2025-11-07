@@ -116,7 +116,7 @@ export const debitNoteRouter = router({
         total: totals.total,
         notes: input.notes,
         status: input.status,
-        createdBy: new ObjectId(ctx.userId),
+        createdBy: ctx.userId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

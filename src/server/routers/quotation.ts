@@ -126,7 +126,7 @@ export const quotationRouter = router({
         notes: input.notes,
         termsAndConditions: input.termsAndConditions,
         status: input.status,
-        createdBy: new ObjectId(ctx.userId),
+        createdBy: ctx.userId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

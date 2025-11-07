@@ -61,7 +61,7 @@ export class DocumentConversionService {
         amountDue: quotation.total,
         payments: [],
       },
-      createdBy: new ObjectId(userId),
+      createdBy: userId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

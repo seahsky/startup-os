@@ -133,7 +133,7 @@ export const invoiceRouter = router({
           amountDue: totals.total,
           payments: [],
         },
-        createdBy: new ObjectId(ctx.userId),
+        createdBy: ctx.userId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
