@@ -9,7 +9,26 @@ const t = initTRPC.context<Context>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-// Protected procedure - requires authentication
+// Authenticated procedure - requires authentication but not company assignment
+// Use this for operations like company creation during onboarding
+export const authenticatedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'You must be logged in to access this resource',
+    });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      // TypeScript now knows userId is non-null string
+      userId: ctx.userId as string,
+    },
+  });
+});
+
+// Protected procedure - requires authentication AND company assignment
 // The middleware ensures userId and companyId are non-null
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.userId) {
