@@ -1,93 +1,33 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserButton, useUser } from '@clerk/nextjs';
-import {
-  LayoutDashboard,
-  FileText,
-  FileCheck,
-  FileX,
-  FilePlus,
-  Users,
-  Package,
-  Settings,
-} from 'lucide-react';
-
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Quotations', href: '/dashboard/quotations', icon: FileText },
-  { name: 'Invoices', href: '/dashboard/invoices', icon: FileCheck },
-  { name: 'Credit Notes', href: '/dashboard/credit-notes', icon: FileX },
-  { name: 'Debit Notes', href: '/dashboard/debit-notes', icon: FilePlus },
-  { name: 'Customers', href: '/dashboard/customers', icon: Users },
-  { name: 'Products', href: '/dashboard/products', icon: Package },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
-];
+import { DesktopSidebar } from '@/components/layout/DesktopSidebar';
+import { MobileHeader } from '@/components/layout/MobileHeader';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useUser();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200">
-        <div className="flex flex-col h-full">
-          <div className="p-6">
-            <Link href="/" className="flex items-center space-x-2">
-              <FileCheck className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">Invoicing</span>
-            </Link>
-          </div>
+      {/* Desktop Sidebar - hidden on mobile (< lg breakpoint) */}
+      <div className="hidden lg:block">
+        <DesktopSidebar pathname={pathname} />
+      </div>
 
-          <nav className="flex-1 px-4 space-y-1">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+      {/* Mobile Header - hidden on desktop (>= lg breakpoint) */}
+      <div className="lg:hidden">
+        <MobileHeader />
+      </div>
 
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.name}</span>
-                </Link>
-              );
-            })}
-          </nav>
+      {/* Main Content - responsive padding */}
+      <div className="lg:pl-64 pb-20 lg:pb-0">
+        <main className="py-4 px-4 lg:py-8 lg:px-8">{children}</main>
+      </div>
 
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center space-x-3 px-3 py-2">
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: 'w-10 h-10'
-                  }
-                }}
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.fullName || user?.primaryEmailAddress?.emailAddress}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {user?.publicMetadata?.role as string || 'User'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="pl-64">
-        <main className="py-8 px-8">{children}</main>
+      {/* Mobile Bottom Navigation - hidden on desktop (>= lg breakpoint) */}
+      <div className="lg:hidden">
+        <MobileBottomNav pathname={pathname} />
       </div>
     </div>
   );

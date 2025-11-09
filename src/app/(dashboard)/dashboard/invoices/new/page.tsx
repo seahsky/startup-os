@@ -87,24 +87,24 @@ export default function NewInvoicePage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex items-center gap-3 lg:gap-4">
         <Link href="/dashboard/invoices">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="w-4 h-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">New Invoice</h1>
-          <p className="text-gray-600 mt-1">Create a new invoice for your customer</p>
+          <h1 className="text-xl lg:text-3xl font-bold text-gray-900">New Invoice</h1>
+          <p className="text-sm lg:text-base text-gray-600 mt-1">Create a new invoice for your customer</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
         {/* Customer & Date Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
+            <CardTitle className="text-lg lg:text-xl">Basic Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <CustomerSelector
@@ -112,7 +112,7 @@ export default function NewInvoicePage() {
               onChange={(customerId) => setFormData(prev => ({ ...prev, customerId }))}
             />
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputField
                 label="Invoice Date"
                 name="date"
@@ -159,21 +159,23 @@ export default function NewInvoicePage() {
         {/* Line Items */}
         <Card>
           <CardHeader>
-            <CardTitle>Items</CardTitle>
+            <CardTitle className="text-lg lg:text-xl">Items</CardTitle>
           </CardHeader>
           <CardContent>
-            <ItemsTable
-              items={formData.items}
-              onChange={(items) => setFormData(prev => ({ ...prev, items }))}
-              currency={formData.currency}
-            />
+            <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+              <ItemsTable
+                items={formData.items}
+                onChange={(items) => setFormData(prev => ({ ...prev, items }))}
+                currency={formData.currency}
+              />
+            </div>
           </CardContent>
         </Card>
 
         {/* Notes & Terms */}
         <Card>
           <CardHeader>
-            <CardTitle>Additional Information</CardTitle>
+            <CardTitle className="text-lg lg:text-xl">Additional Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <TextareaField
@@ -196,15 +198,16 @@ export default function NewInvoicePage() {
         </Card>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3">
-          <Link href="/dashboard/invoices">
-            <Button type="button" variant="outline">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+          <Link href="/dashboard/invoices" className="w-full sm:w-auto">
+            <Button type="button" variant="outline" className="w-full sm:w-auto">
               Cancel
             </Button>
           </Link>
           <Button
             type="submit"
             disabled={createMutation.isPending}
+            className="w-full sm:w-auto"
           >
             {createMutation.isPending ? 'Creating...' : 'Create Invoice'}
           </Button>
