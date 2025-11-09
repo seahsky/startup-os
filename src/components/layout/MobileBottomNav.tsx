@@ -20,7 +20,7 @@ export function MobileBottomNav({ pathname }: MobileBottomNavProps) {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 pb-safe">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 pb-safe [body.pdf-modal-open_&]:hidden">
         <div className="flex items-end justify-around h-16 px-2">
           {mobileBottomNavItems.map((item, index) => {
             const Icon = item.icon;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { X, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -26,7 +26,6 @@ export function PDFPreviewModal({
   onDownload,
 }: PDFPreviewModalProps) {
   const [numPages, setNumPages] = useState<number>(0);
-  const [pageNumber, setPageNumber] = useState<number>(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,10 +41,17 @@ export function PDFPreviewModal({
     }
   }, [pdfBlob]);
 
+  // Manage body class to hide mobile menu when modal is open
   useEffect(() => {
-    if (!isOpen) {
-      setPageNumber(1);
+    if (isOpen) {
+      document.body.classList.add('pdf-modal-open');
+    } else {
+      document.body.classList.remove('pdf-modal-open');
     }
+
+    return () => {
+      document.body.classList.remove('pdf-modal-open');
+    };
   }, [isOpen]);
 
   // Track container width for responsive PDF scaling
@@ -73,16 +79,8 @@ export function PDFPreviewModal({
     setNumPages(numPages);
   }
 
-  const goToPrevPage = () => {
-    setPageNumber((prev) => Math.max(prev - 1, 1));
-  };
-
-  const goToNextPage = () => {
-    setPageNumber((prev) => Math.min(prev + 1, numPages));
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-2 sm:p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-75 p-2 sm:p-4">
       <div className="relative w-full h-full max-w-6xl max-h-screen bg-white rounded-lg shadow-xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 border-b flex-shrink-0">
@@ -103,61 +101,41 @@ export function PDFPreviewModal({
           </div>
         </div>
 
-        {/* PDF Viewer */}
+        {/* PDF Viewer - Scrollable All Pages */}
         <div
           ref={containerRef}
-          className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-2 sm:p-4"
+          className="flex-1 overflow-auto bg-gray-100 p-2 sm:p-4"
         >
           {pdfUrl && containerWidth > 0 && (
-            <Document
-              file={pdfUrl}
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={
-                <div className="flex items-center justify-center p-4 sm:p-8">
-                  <div className="text-sm sm:text-base text-gray-600">Loading PDF...</div>
-                </div>
-              }
-              error={
-                <div className="flex items-center justify-center p-4 sm:p-8">
-                  <div className="text-sm sm:text-base text-red-600">Failed to load PDF</div>
-                </div>
-              }
-            >
-              <Page
-                pageNumber={pageNumber}
-                width={containerWidth}
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
-                className="shadow-lg max-w-full"
-              />
-            </Document>
+            <div className="flex flex-col items-center gap-4">
+              <Document
+                file={pdfUrl}
+                onLoadSuccess={onDocumentLoadSuccess}
+                loading={
+                  <div className="flex items-center justify-center p-4 sm:p-8">
+                    <div className="text-sm sm:text-base text-gray-600">Loading PDF...</div>
+                  </div>
+                }
+                error={
+                  <div className="flex items-center justify-center p-4 sm:p-8">
+                    <div className="text-sm sm:text-base text-red-600">Failed to load PDF</div>
+                  </div>
+                }
+              >
+                {Array.from({ length: numPages }, (_, index) => (
+                  <Page
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    width={containerWidth}
+                    renderTextLayer={true}
+                    renderAnnotationLayer={true}
+                    className="shadow-lg max-w-full mb-4"
+                  />
+                ))}
+              </Document>
+            </div>
           )}
         </div>
-
-        {/* Footer with Pagination */}
-        {numPages > 0 && (
-          <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-t bg-white flex-shrink-0">
-            <Button
-              onClick={goToPrevPage}
-              disabled={pageNumber <= 1}
-              variant="outline"
-              size="sm"
-            >
-              <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-            </Button>
-            <span className="text-xs sm:text-sm text-gray-700 whitespace-nowrap">
-              Page {pageNumber} of {numPages}
-            </span>
-            <Button
-              onClick={goToNextPage}
-              disabled={pageNumber >= numPages}
-              variant="outline"
-              size="sm"
-            >
-              <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
