@@ -14,6 +14,7 @@ import {
   CurrencyFormValue,
 } from '@/components/shared/CurrencyDisplay';
 import type { CurrencyCode } from '@/lib/types/currency';
+import { PDFActions } from '@/components/documents/PDFActions';
 
 interface PageProps {
   params: { id: string };
@@ -27,6 +28,8 @@ export default function QuotationDetailPage(props: PageProps) {
     id: params.id,
   });
 
+  const { data: company, isLoading: isLoadingCompany } = trpc.company.get.useQuery();
+
   const convertMutation = trpc.quotation.convertToInvoice.useMutation({
     onSuccess: (invoice) => {
       router.push(`/dashboard/invoices/${invoice._id.toString()}`);
@@ -39,8 +42,9 @@ export default function QuotationDetailPage(props: PageProps) {
     },
   });
 
-  if (isLoading) return <LoadingPage />;
+  if (isLoading || isLoadingCompany) return <LoadingPage />;
   if (!quotation) return <div>Quotation not found</div>;
+  if (!company) return <div>Company not found</div>;
 
   const handleConvert = () => {
     if (confirm('Convert this quotation to an invoice?')) {
@@ -70,6 +74,12 @@ export default function QuotationDetailPage(props: PageProps) {
         </div>
 
         <div className="flex gap-2">
+          <PDFActions
+            documentType="quotation"
+            document={quotation}
+            company={company}
+            variant="outline"
+          />
           {quotation.status === 'accepted' && !quotation.convertedToInvoiceId && (
             <Button onClick={handleConvert} disabled={convertMutation.isPending}>
               Convert to Invoice
