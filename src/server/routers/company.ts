@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { TRPCError } from '@trpc/server';
-import { router, publicProcedure, protectedProcedure } from '../trpc';
+import { router, authenticatedProcedure, protectedProcedure } from '../trpc';
 import { getCompaniesCollection } from '../db/collections';
 import {
   companyCreateSchema,
@@ -11,17 +11,9 @@ import { assignUserToCompany } from '@/lib/clerk-utils';
 import type { Company } from '@/lib/types/document';
 
 export const companyRouter = router({
-  create: publicProcedure
+  create: authenticatedProcedure
     .input(companyCreateSchema)
     .mutation(async ({ input, ctx }) => {
-      // User must be authenticated to create a company
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'You must be logged in to create a company',
-        });
-      }
-
       // User should not already have a company
       if (ctx.companyId) {
         throw new TRPCError({

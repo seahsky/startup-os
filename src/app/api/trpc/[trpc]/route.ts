@@ -1,12 +1,19 @@
+import { cache } from 'react';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 import { appRouter } from '@/server/routers/_app';
 import { createContext } from '@/server/context';
 import { auth, currentUser } from '@clerk/nextjs/server';
 
-const handler = async (req: Request) => {
-  // Call auth() in the route handler context where Clerk can detect middleware
+// Cache auth calls per request to avoid redundant lookups
+const getAuthData = cache(async () => {
   const { userId } = await auth();
   const user = userId ? await currentUser() : null;
+  return { userId, user };
+});
+
+const handler = async (req: Request) => {
+  // Get cached auth data for this request
+  const { userId, user } = await getAuthData();
 
   return fetchRequestHandler({
     endpoint: '/api/trpc',
