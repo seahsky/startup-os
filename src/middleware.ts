@@ -23,6 +23,11 @@ const isOnboardingRoute = createRouteMatcher([
   '/onboarding',
 ]);
 
+// API routes - should not be redirected, let them handle auth through tRPC
+const isApiRoute = createRouteMatcher([
+  '/api(.*)',
+]);
+
 export default clerkMiddleware(async (auth, req) => {
   const url = req.nextUrl.clone();
 
@@ -39,7 +44,8 @@ export default clerkMiddleware(async (auth, req) => {
       const companyId = user?.publicMetadata?.companyId as string | undefined;
 
       // If user doesn't have a company and is not already on onboarding, redirect to onboarding
-      if (!companyId && !isOnboardingRoute(req)) {
+      // BUT: Don't redirect API calls - let them proceed to tRPC handlers
+      if (!companyId && !isOnboardingRoute(req) && !isApiRoute(req)) {
         url.pathname = '/onboarding';
         return NextResponse.redirect(url);
       }
