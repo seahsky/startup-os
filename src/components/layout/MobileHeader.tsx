@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { UserButton } from '@clerk/nextjs';
-import { FileCheck } from 'lucide-react';
+import { FileCheck, Settings } from 'lucide-react';
 
 export function MobileHeader() {
   return (
@@ -14,14 +14,26 @@ export function MobileHeader() {
           <span className="text-lg font-bold text-gray-900">Invoicing</span>
         </Link>
 
-        {/* User Button */}
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox: 'w-8 h-8'
-            }
-          }}
-        />
+        {/* Right Side: Settings + User */}
+        <div className="flex items-center gap-3">
+          {/* Settings Icon */}
+          <Link
+            href="/dashboard/settings"
+            className="p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
+            aria-label="Settings"
+          >
+            <Settings className="w-5 h-5 text-gray-600" />
+          </Link>
+
+          {/* User Button */}
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: 'w-8 h-8'
+              }
+            }}
+          />
+        </div>
       </div>
     </header>
   );

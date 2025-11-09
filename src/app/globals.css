@@ -115,4 +115,14 @@
   .duration-300 {
     animation-duration: 300ms;
   }
+
+  /* Hide scrollbar for horizontal scroll (tabs, etc.) */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }

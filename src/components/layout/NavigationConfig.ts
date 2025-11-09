@@ -42,7 +42,7 @@ export const mobileBottomNavItems: NavItem[] = [
   { id: 'customers', name: 'Customers', href: '/dashboard/customers', icon: Users },
   { id: 'add', name: 'Add', href: '/dashboard/add', icon: Plus },
   { id: 'products', name: 'Products', href: '/dashboard/products', icon: Package },
-  { id: 'settings', name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { id: 'documents', name: 'Documents', href: '/dashboard/documents', icon: FileText },
 ];
 
 /**
@@ -87,6 +87,48 @@ export const documentTypes: DocumentType[] = [
     name: 'New Debit Note',
     description: 'Charge additional fees',
     href: '/dashboard/debit-notes/new',
+    icon: FilePlus,
+    color: 'text-green-600',
+  },
+];
+
+/**
+ * Document tabs configuration for mobile Documents page
+ */
+export interface DocumentTab {
+  id: string;
+  label: string;
+  shortLabel: string;
+  icon: LucideIcon;
+  color: string;
+}
+
+export const documentTabs: DocumentTab[] = [
+  {
+    id: 'invoices',
+    label: 'Invoices',
+    shortLabel: 'Invoices',
+    icon: FileCheck,
+    color: 'text-blue-600',
+  },
+  {
+    id: 'quotations',
+    label: 'Quotations',
+    shortLabel: 'Quotes',
+    icon: FileText,
+    color: 'text-purple-600',
+  },
+  {
+    id: 'credit-notes',
+    label: 'Credit Notes',
+    shortLabel: 'Credits',
+    icon: FileX,
+    color: 'text-red-600',
+  },
+  {
+    id: 'debit-notes',
+    label: 'Debit Notes',
+    shortLabel: 'Debits',
     icon: FilePlus,
     color: 'text-green-600',
   },
