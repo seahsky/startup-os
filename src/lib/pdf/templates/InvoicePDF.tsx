@@ -4,7 +4,7 @@ import { PDFHeader } from '../components/PDFHeader';
 import { PDFFooter } from '../components/PDFFooter';
 import { PDFCustomerInfo } from '../components/PDFCustomerInfo';
 import { PDFItemsTable } from '../components/PDFItemsTable';
-import { formatDateForPDF } from '../utils/pdfHelpers';
+import { formatDateForPDF, formatCurrencyForPDF } from '../utils/pdfHelpers';
 import type { Invoice, Company } from '@/lib/types/document';
 
 interface InvoicePDFProps {
@@ -84,10 +84,7 @@ export function InvoicePDF({ invoice, company }: InvoicePDFProps) {
                   )}
                 </View>
                 <Text style={pdfStyles.totalValue}>
-                  {payment.amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: invoice.currency,
-                  })}
+                  {formatCurrencyForPDF(payment.amount, invoice.currency)}
                 </Text>
               </View>
             ))}

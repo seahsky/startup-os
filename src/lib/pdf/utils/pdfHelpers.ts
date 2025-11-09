@@ -1,14 +1,22 @@
 import { format } from 'date-fns';
-import { formatCurrencyWithCode } from '@/lib/utils/currency';
+import { formatCurrencyWithCode, formatCurrencyWithSymbol } from '@/lib/utils/currency';
 import type { CurrencyCode } from '@/lib/types/currency';
 import type { DocumentItem } from '@/lib/types/document';
 
 /**
- * Format currency for PDF display
- * Always uses "code" mode for clarity in documents
+ * Format currency for PDF display in CODE mode
+ * Uses "code" mode for clarity in totals and summaries (e.g., "USD 1,234.56")
  */
 export function formatCurrencyForPDF(amount: number, currency: string): string {
   return formatCurrencyWithCode(amount, currency as CurrencyCode);
+}
+
+/**
+ * Format currency for PDF display in SYMBOL mode
+ * Uses "symbol" mode for compact display in tables (e.g., "$1,234.56")
+ */
+export function formatCurrencySymbolForPDF(amount: number, currency: string): string {
+  return formatCurrencyWithSymbol(amount, currency as CurrencyCode);
 }
 
 /**

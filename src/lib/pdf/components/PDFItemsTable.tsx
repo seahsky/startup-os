@@ -2,6 +2,7 @@ import { View, Text } from '@react-pdf/renderer';
 import { pdfStyles } from './PDFStyles';
 import {
   formatCurrencyForPDF,
+  formatCurrencySymbolForPDF,
   getTaxBreakdown,
   formatTaxRate,
 } from '../utils/pdfHelpers';
@@ -56,13 +57,13 @@ export function PDFItemsTable({
           </View>
           <Text style={pdfStyles.colQty}>{item.quantity}</Text>
           <Text style={pdfStyles.colUnitPrice}>
-            {formatCurrencyForPDF(item.unitPrice, currency)}
+            {formatCurrencySymbolForPDF(item.unitPrice, currency)}
           </Text>
           <Text style={pdfStyles.colTax}>
-            {formatCurrencyForPDF(item.taxAmount, currency)}
+            {formatCurrencySymbolForPDF(item.taxAmount, currency)}
           </Text>
           <Text style={[pdfStyles.colTotal, pdfStyles.textBold]}>
-            {formatCurrencyForPDF(item.total, currency)}
+            {formatCurrencySymbolForPDF(item.total, currency)}
           </Text>
         </View>
       ))}
