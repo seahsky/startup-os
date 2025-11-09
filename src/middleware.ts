@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher, currentUser } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher, clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 // Note: Middleware automatically runs on Edge Runtime in Next.js 14+
@@ -33,8 +33,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     // After authentication, check if user needs onboarding
     if (userId) {
-      // Get user to check metadata
-      const user = await currentUser();
+      // Get user to check metadata - use clerkClient instead of currentUser()
+      // to avoid calling auth() again inside the middleware callback
+      const user = await (await clerkClient()).users.getUser(userId);
       const companyId = user?.publicMetadata?.companyId as string | undefined;
 
       // If user doesn't have a company and is not already on onboarding, redirect to onboarding
