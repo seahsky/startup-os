@@ -20,6 +20,7 @@ interface PageProps {
 export default function EditQuotationPage(props: PageProps) {
   const params = props.params;
   const router = useRouter();
+  const utils = trpc.useUtils();
   const [isInitialized, setIsInitialized] = useState(false);
   const [formData, setFormData] = useState({
     customerId: '',
@@ -90,7 +91,10 @@ export default function EditQuotationPage(props: PageProps) {
   }, [selectedCustomer, company, isInitialized]);
 
   const updateMutation = trpc.quotation.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Invalidate cache to ensure fresh data is fetched
+      await utils.quotation.getById.invalidate({ id: params.id });
+      await utils.quotation.list.invalidate();
       router.push(`/dashboard/quotations/${params.id}`);
     },
   });
