@@ -19,6 +19,7 @@ interface PageProps {
 export default function EditDebitNotePage(props: PageProps) {
   const params = props.params;
   const router = useRouter();
+  const utils = trpc.useUtils();
   const [isInitialized, setIsInitialized] = useState(false);
   const [formData, setFormData] = useState({
     date: '',
@@ -65,7 +66,10 @@ export default function EditDebitNotePage(props: PageProps) {
   }, [debitNote, isInitialized]);
 
   const updateMutation = trpc.debitNote.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Invalidate cache to ensure fresh data is fetched
+      await utils.debitNote.getById.invalidate({ id: params.id });
+      await utils.debitNote.list.invalidate();
       router.push(`/dashboard/debit-notes/${params.id}`);
     },
   });

@@ -19,6 +19,7 @@ interface PageProps {
 export default function EditCreditNotePage(props: PageProps) {
   const params = props.params;
   const router = useRouter();
+  const utils = trpc.useUtils();
   const [isInitialized, setIsInitialized] = useState(false);
   const [formData, setFormData] = useState({
     date: '',
@@ -65,7 +66,10 @@ export default function EditCreditNotePage(props: PageProps) {
   }, [creditNote, isInitialized]);
 
   const updateMutation = trpc.creditNote.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Invalidate cache to ensure fresh data is fetched
+      await utils.creditNote.getById.invalidate({ id: params.id });
+      await utils.creditNote.list.invalidate();
       router.push(`/dashboard/credit-notes/${params.id}`);
     },
   });

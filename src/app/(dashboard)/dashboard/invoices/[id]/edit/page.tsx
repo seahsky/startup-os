@@ -20,6 +20,7 @@ interface PageProps {
 export default function EditInvoicePage(props: PageProps) {
   const params = props.params;
   const router = useRouter();
+  const utils = trpc.useUtils();
   const [isInitialized, setIsInitialized] = useState(false);
   const [formData, setFormData] = useState({
     customerId: '',
@@ -90,7 +91,10 @@ export default function EditInvoicePage(props: PageProps) {
   }, [selectedCustomer, company, isInitialized]);
 
   const updateMutation = trpc.invoice.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Invalidate cache to ensure fresh data is fetched
+      await utils.invoice.getById.invalidate({ id: params.id });
+      await utils.invoice.list.invalidate();
       router.push(`/dashboard/invoices/${params.id}`);
     },
   });
