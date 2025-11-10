@@ -113,7 +113,7 @@ export function ItemsTable({ items, onChange, currency = 'USD' }: ItemsTableProp
             {items.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center py-8 text-gray-500">
-                  No items added. Click "Add Item" to get started.
+                  No items added. Click &ldquo;Add Item&rdquo; to get started.
                 </td>
               </tr>
             ) : (

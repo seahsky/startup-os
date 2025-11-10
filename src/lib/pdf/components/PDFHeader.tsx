@@ -22,6 +22,7 @@ export function PDFHeader({
         {/* Company Info */}
         <View style={pdfStyles.companyInfo}>
           {company.logo && (
+            // eslint-disable-next-line jsx-a11y/alt-text
             <Image
               src={company.logo}
               style={pdfStyles.logo}

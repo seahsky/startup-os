@@ -88,7 +88,7 @@ export default function EditInvoicePage(props: PageProps) {
     } else if (company?.currency && !formData.currency) {
       setFormData(prev => ({ ...prev, currency: company.currency }));
     }
-  }, [selectedCustomer, company, isInitialized]);
+  }, [selectedCustomer, company, isInitialized, formData.currency]);
 
   const updateMutation = trpc.invoice.update.useMutation({
     onSuccess: async () => {
