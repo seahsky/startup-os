@@ -108,7 +108,9 @@ export const quotationRouter = router({
         email: customer.email,
         phone: customer.phone,
         address: customer.address,
-        taxId: customer.taxId,
+        country: customer.country,
+        taxIds: customer.taxIds,
+        taxId: customer.taxId, // Keep for backward compatibility
       };
 
       const quotation = {

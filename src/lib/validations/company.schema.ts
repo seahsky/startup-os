@@ -1,5 +1,12 @@
 import { z } from 'zod';
 import { addressSchema } from './customer.schema';
+import { COUNTRY_TAX_CONFIGS } from '../constants/countryTaxConfigs';
+import {
+  getAllTaxIdFields,
+  getRequiredTaxIdFields,
+  validateTaxIdFormat,
+  getTaxIdValidationError,
+} from '../utils/taxIdHelpers';
 
 export const companySettingsSchema = z.object({
   invoicePrefix: z.string().min(1, 'Invoice prefix is required').default('INV-'),
@@ -15,26 +22,161 @@ export const companySettingsSchema = z.object({
   defaultDueDays: z.number().min(1).default(30),
 });
 
-export const companyCreateSchema = z.object({
-  name: z.string().min(1, 'Company name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone is required'),
-  address: addressSchema,
-  taxId: z.string().min(1, 'Tax ID is required'),
-  logo: z.string().optional(),
-  currency: z.string().min(1, 'Currency is required').default('USD'),
-  settings: companySettingsSchema.optional(),
-});
+export const companyCreateSchema = z
+  .object({
+    name: z.string().min(1, 'Company name is required'),
+    email: z.string().email('Invalid email address'),
+    phone: z.string().min(1, 'Phone is required'),
+    address: addressSchema,
+    country: z.string().length(2, 'Must be 2-letter ISO country code'),
+    taxIds: z.record(z.string()),
+    logo: z.string().optional(),
+    currency: z.string().min(1, 'Currency is required').default('USD'),
+    settings: companySettingsSchema.optional(),
+  })
+  .refine(
+    (data) => {
+      // Validate country code exists in our configurations
+      return data.country in COUNTRY_TAX_CONFIGS;
+    },
+    {
+      message: 'Invalid or unsupported country code',
+      path: ['country'],
+    }
+  )
+  .refine(
+    (data) => {
+      // Validate all required tax IDs are provided
+      const requiredFields = getRequiredTaxIdFields(data.country);
 
-export const companyUpdateSchema = z.object({
-  name: z.string().min(1, 'Company name is required').optional(),
-  email: z.string().email('Invalid email address').optional(),
-  phone: z.string().min(1, 'Phone is required').optional(),
-  address: addressSchema.optional(),
-  taxId: z.string().min(1, 'Tax ID is required').optional(),
-  logo: z.string().optional(),
-  currency: z.string().min(1, 'Currency is required').optional(),
-});
+      for (const field of requiredFields) {
+        if (!data.taxIds[field.fieldName] || data.taxIds[field.fieldName].trim() === '') {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    (data) => {
+      const requiredFields = getRequiredTaxIdFields(data.country);
+      const missing = requiredFields.filter(
+        (field) => !data.taxIds[field.fieldName] || data.taxIds[field.fieldName].trim() === ''
+      );
+
+      return {
+        message: `Missing required tax IDs: ${missing.map((f) => f.displayName).join(', ')}`,
+        path: ['taxIds'],
+      };
+    }
+  )
+  .refine(
+    (data) => {
+      // Validate format of all provided tax IDs
+      const allFields = getAllTaxIdFields(data.country);
+
+      for (const field of allFields) {
+        const value = data.taxIds[field.fieldName];
+        if (value && value.trim() !== '') {
+          const isValid = validateTaxIdFormat(data.country, field.fieldName, value);
+          if (!isValid) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    },
+    (data) => {
+      const allFields = getAllTaxIdFields(data.country);
+      const invalid = allFields.find((field) => {
+        const value = data.taxIds[field.fieldName];
+        if (value && value.trim() !== '') {
+          return !validateTaxIdFormat(data.country, field.fieldName, value);
+        }
+        return false;
+      });
+
+      if (invalid) {
+        return {
+          message: getTaxIdValidationError(data.country, invalid.fieldName),
+          path: ['taxIds', invalid.fieldName],
+        };
+      }
+
+      return {
+        message: 'Invalid tax ID format',
+        path: ['taxIds'],
+      };
+    }
+  );
+
+export const companyUpdateSchema = z
+  .object({
+    name: z.string().min(1, 'Company name is required').optional(),
+    email: z.string().email('Invalid email address').optional(),
+    phone: z.string().min(1, 'Phone is required').optional(),
+    address: addressSchema.optional(),
+    country: z.string().length(2, 'Must be 2-letter ISO country code').optional(),
+    taxIds: z.record(z.string()).optional(),
+    logo: z.string().optional(),
+    currency: z.string().min(1, 'Currency is required').optional(),
+  })
+  .refine(
+    (data) => {
+      // If country is provided, validate it exists
+      if (data.country) {
+        return data.country in COUNTRY_TAX_CONFIGS;
+      }
+      return true;
+    },
+    {
+      message: 'Invalid or unsupported country code',
+      path: ['country'],
+    }
+  )
+  .refine(
+    (data) => {
+      // If both country and taxIds are provided, validate format
+      if (data.country && data.taxIds) {
+        const allFields = getAllTaxIdFields(data.country);
+
+        for (const field of allFields) {
+          const value = data.taxIds[field.fieldName];
+          if (value && value.trim() !== '') {
+            const isValid = validateTaxIdFormat(data.country, field.fieldName, value);
+            if (!isValid) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    },
+    (data) => {
+      if (data.country && data.taxIds) {
+        const allFields = getAllTaxIdFields(data.country);
+        const invalid = allFields.find((field) => {
+          const value = data.taxIds?.[field.fieldName];
+          if (value && value.trim() !== '') {
+            return !validateTaxIdFormat(data.country!, field.fieldName, value);
+          }
+          return false;
+        });
+
+        if (invalid) {
+          return {
+            message: getTaxIdValidationError(data.country, invalid.fieldName),
+            path: ['taxIds', invalid.fieldName],
+          };
+        }
+      }
+
+      return {
+        message: 'Invalid tax ID format',
+        path: ['taxIds'],
+      };
+    }
+  );
 
 export const companySettingsUpdateSchema = z.object({
   invoicePrefix: z.string().min(1, 'Invoice prefix is required').optional(),

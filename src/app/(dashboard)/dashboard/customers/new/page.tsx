@@ -16,7 +16,8 @@ export default function NewCustomerPage() {
     name: '',
     email: '',
     phone: '',
-    taxId: '',
+    country: 'US', // Default to US
+    taxIds: {} as Record<string, string>,
     contactPerson: '',
     notes: '',
     currency: '',
@@ -103,13 +104,11 @@ export default function NewCustomerPage() {
                 required
                 placeholder="+1 (555) 123-4567"
               />
-              <InputField
-                label="Tax ID"
-                name="taxId"
-                value={formData.taxId}
-                onChange={handleChange}
-                placeholder="TAX-123456"
-              />
+              <div className="flex items-end">
+                <p className="text-sm text-gray-500 pb-2">
+                  Tax IDs can be added after creation
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

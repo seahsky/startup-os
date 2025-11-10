@@ -35,7 +35,10 @@ async function seed() {
         country: 'United States',
         zipCode: '94102',
       },
-      taxId: 'TAX-123456789',
+      country: 'US',
+      taxIds: {
+        ein: '123456789',
+      },
       currency: 'USD',
       settings: {
         invoicePrefix: 'INV-',
@@ -72,7 +75,10 @@ async function seed() {
           country: 'United States',
           zipCode: '10001',
         },
-        taxId: 'TAX-ACME-001',
+        country: 'US',
+        taxIds: {
+          ein: '987654321',
+        },
         contactPerson: 'John Smith',
         status: 'active',
         createdAt: new Date(),
@@ -91,7 +97,10 @@ async function seed() {
           country: 'United States',
           zipCode: '73301',
         },
-        taxId: 'TAX-TECH-002',
+        country: 'US',
+        taxIds: {
+          ein: '456789123',
+        },
         contactPerson: 'Sarah Johnson',
         status: 'active',
         createdAt: new Date(),
@@ -110,6 +119,7 @@ async function seed() {
           country: 'United States',
           zipCode: '60601',
         },
+        country: 'US',
         contactPerson: 'Michael Brown',
         status: 'active',
         createdAt: new Date(),

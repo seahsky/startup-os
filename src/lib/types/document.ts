@@ -14,7 +14,9 @@ export interface Company {
   email: string;
   phone: string;
   address: Address;
-  taxId: string;
+  country: string; // ISO 3166-1 alpha-2 country code
+  taxIds: Record<string, string>; // Dynamic tax IDs based on country
+  taxId?: string; // Legacy field - kept for backward compatibility during migration
   logo?: string;
   currency: string;
   settings: CompanySettings;
@@ -43,7 +45,9 @@ export interface Customer {
   email: string;
   phone: string;
   address: Address;
-  taxId?: string;
+  country: string; // ISO 3166-1 alpha-2 country code
+  taxIds?: Record<string, string>; // Dynamic tax IDs based on country (optional for customers)
+  taxId?: string; // Legacy field - kept for backward compatibility during migration
   contactPerson?: string;
   notes?: string;
   currency?: string;
@@ -83,7 +87,9 @@ export interface CustomerSnapshot {
   email: string;
   phone: string;
   address: Address;
-  taxId?: string;
+  country: string; // ISO 3166-1 alpha-2 country code
+  taxIds?: Record<string, string>; // Dynamic tax IDs based on country
+  taxId?: string; // Legacy field - kept for backward compatibility
 }
 
 export type QuotationStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted';

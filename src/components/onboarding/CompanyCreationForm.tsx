@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { companyCreateSchema, type CompanyCreateInput } from '@/lib/validations/company.schema';
 import { trpc } from '@/lib/trpc/client';
+import { CountrySelector } from '@/components/forms/CountrySelector';
+import { CountryTaxIdFields } from '@/components/forms/CountryTaxIdFields';
 
 export function CompanyCreationForm() {
   const router = useRouter();
@@ -18,13 +20,19 @@ export function CompanyCreationForm() {
   const {
     register,
     handleSubmit,
+    control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CompanyCreateInput>({
     resolver: zodResolver(companyCreateSchema),
     defaultValues: {
       currency: 'USD',
+      country: 'US',
+      taxIds: {},
     },
   });
+
+  const selectedCountry = watch('country');
 
   const onSubmit = async (data: CompanyCreateInput) => {
     try {
@@ -91,19 +99,52 @@ export function CompanyCreationForm() {
           )}
         </div>
 
-        {/* Tax ID */}
+        {/* Country Selector */}
         <div>
-          <Label htmlFor="taxId">Tax ID / Business Number</Label>
-          <Input
-            id="taxId"
-            {...register('taxId')}
-            placeholder="12-3456789"
-            className="mt-1"
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <CountrySelector
+                value={field.value}
+                onChange={field.onChange}
+                error={errors.country?.message}
+                disabled={isSubmitting || createCompany.isPending}
+              />
+            )}
           />
-          {errors.taxId && (
-            <p className="mt-1 text-sm text-red-600">{errors.taxId.message}</p>
-          )}
         </div>
+
+        {/* Tax IDs based on selected country */}
+        {selectedCountry && (
+          <div className="border-t pt-6">
+            <Controller
+              name="taxIds"
+              control={control}
+              render={({ field }) => (
+                <CountryTaxIdFields
+                  country={selectedCountry}
+                  value={field.value || {}}
+                  onChange={field.onChange}
+                  errors={
+                    errors.taxIds && typeof errors.taxIds === 'object'
+                      ? Object.entries(errors.taxIds).reduce<Record<string, string>>(
+                          (acc, [key, value]) => {
+                            if (value && typeof value === 'object' && 'message' in value) {
+                              acc[key] = value.message as string;
+                            }
+                            return acc;
+                          },
+                          {}
+                        )
+                      : {}
+                  }
+                  disabled={isSubmitting || createCompany.isPending}
+                />
+              )}
+            />
+          </div>
+        )}
 
         {/* Currency */}
         <div>
