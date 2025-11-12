@@ -7,11 +7,11 @@ import {
 } from '../utils/taxIdHelpers';
 
 export const addressSchema = z.object({
-  street: z.string().min(1, 'Street is required'),
-  city: z.string().min(1, 'City is required'),
-  state: z.string().min(1, 'State is required'),
-  country: z.string().min(1, 'Country is required'),
-  zipCode: z.string().min(1, 'Zip code is required'),
+  street: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+  zipCode: z.string().optional(),
 });
 
 export const customerCreateSchema = z
@@ -19,7 +19,7 @@ export const customerCreateSchema = z
     name: z.string().min(1, 'Name is required'),
     email: z.string().email('Invalid email address'),
     phone: z.string().min(1, 'Phone is required'),
-    address: addressSchema,
+    address: addressSchema.optional(),
     country: z.string().length(2, 'Must be 2-letter ISO country code'),
     taxIds: z.record(z.string()).optional(),
     contactPerson: z.string().optional(),

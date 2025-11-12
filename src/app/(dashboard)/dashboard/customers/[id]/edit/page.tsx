@@ -56,11 +56,11 @@ export default function EditCustomerPage(props: PageProps) {
         currency: customer.currency || '',
         status: customer.status,
         address: {
-          street: customer.address.street,
-          city: customer.address.city,
-          state: customer.address.state,
-          country: customer.address.country,
-          zipCode: customer.address.zipCode,
+          street: customer.address?.street || '',
+          city: customer.address?.city || '',
+          state: customer.address?.state || '',
+          country: customer.address?.country || '',
+          zipCode: customer.address?.zipCode || '',
         },
       });
       setIsInitialized(true);
@@ -199,7 +199,6 @@ export default function EditCustomerPage(props: PageProps) {
                   name="address.street"
                   value={formData.address.street}
                   onChange={handleChange}
-                  required
                   placeholder="123 Business Street"
                 />
 
@@ -209,7 +208,6 @@ export default function EditCustomerPage(props: PageProps) {
                     name="address.city"
                     value={formData.address.city}
                     onChange={handleChange}
-                    required
                     placeholder="San Francisco"
                   />
                   <InputField
@@ -217,7 +215,6 @@ export default function EditCustomerPage(props: PageProps) {
                     name="address.state"
                     value={formData.address.state}
                     onChange={handleChange}
-                    required
                     placeholder="CA"
                   />
                 </div>
@@ -228,7 +225,6 @@ export default function EditCustomerPage(props: PageProps) {
                     name="address.country"
                     value={formData.address.country}
                     onChange={handleChange}
-                    required
                     placeholder="United States"
                   />
                   <InputField
@@ -236,7 +232,6 @@ export default function EditCustomerPage(props: PageProps) {
                     name="address.zipCode"
                     value={formData.address.zipCode}
                     onChange={handleChange}
-                    required
                     placeholder="94102"
                   />
                 </div>

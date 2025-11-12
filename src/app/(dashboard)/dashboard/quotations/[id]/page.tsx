@@ -128,11 +128,15 @@ export default function QuotationDetailPage(props: PageProps) {
               <p className="font-medium">{quotation.customerSnapshot.name}</p>
               <p className="text-sm text-gray-600">{quotation.customerSnapshot.email}</p>
               <p className="text-sm text-gray-600">{quotation.customerSnapshot.phone}</p>
-              <p className="text-sm text-gray-600 mt-2">
-                {quotation.customerSnapshot.address.street}<br />
-                {quotation.customerSnapshot.address.city}, {quotation.customerSnapshot.address.state} {quotation.customerSnapshot.address.zipCode}<br />
-                {quotation.customerSnapshot.address.country}
-              </p>
+              {quotation.customerSnapshot.address && (
+                <p className="text-sm text-gray-600 mt-2">
+                  {quotation.customerSnapshot.address.street && <>{quotation.customerSnapshot.address.street}<br /></>}
+                  {(quotation.customerSnapshot.address.city || quotation.customerSnapshot.address.state || quotation.customerSnapshot.address.zipCode) && (
+                    <>{[quotation.customerSnapshot.address.city, quotation.customerSnapshot.address.state, quotation.customerSnapshot.address.zipCode].filter(Boolean).join(', ')}<br /></>
+                  )}
+                  {quotation.customerSnapshot.address.country}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

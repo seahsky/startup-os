@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
 
 export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  zipCode: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
 }
 
 export interface Company {
@@ -44,7 +44,7 @@ export interface Customer {
   name: string;
   email: string;
   phone: string;
-  address: Address;
+  address?: Address;
   country: string; // ISO 3166-1 alpha-2 country code
   taxIds?: Record<string, string>; // Dynamic tax IDs based on country (optional for customers)
   taxId?: string; // Legacy field - kept for backward compatibility during migration
@@ -86,7 +86,7 @@ export interface CustomerSnapshot {
   name: string;
   email: string;
   phone: string;
-  address: Address;
+  address?: Address;
   country: string; // ISO 3166-1 alpha-2 country code
   taxIds?: Record<string, string>; // Dynamic tax IDs based on country
   taxId?: string; // Legacy field - kept for backward compatibility

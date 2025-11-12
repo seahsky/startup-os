@@ -152,7 +152,6 @@ export default function NewCustomerPage() {
                   name="address.street"
                   value={formData.address.street}
                   onChange={handleChange}
-                  required
                   placeholder="123 Business Street"
                 />
 
@@ -162,7 +161,6 @@ export default function NewCustomerPage() {
                     name="address.city"
                     value={formData.address.city}
                     onChange={handleChange}
-                    required
                     placeholder="San Francisco"
                   />
                   <InputField
@@ -170,7 +168,6 @@ export default function NewCustomerPage() {
                     name="address.state"
                     value={formData.address.state}
                     onChange={handleChange}
-                    required
                     placeholder="CA"
                   />
                 </div>
@@ -181,7 +178,6 @@ export default function NewCustomerPage() {
                     name="address.country"
                     value={formData.address.country}
                     onChange={handleChange}
-                    required
                     placeholder="United States"
                   />
                   <InputField
@@ -189,7 +185,6 @@ export default function NewCustomerPage() {
                     name="address.zipCode"
                     value={formData.address.zipCode}
                     onChange={handleChange}
-                    required
                     placeholder="94102"
                   />
                 </div>

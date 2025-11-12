@@ -111,11 +111,15 @@ export default function DebitNoteDetailPage(props: PageProps) {
               <p className="font-medium">{debitNote.customerSnapshot.name}</p>
               <p className="text-sm text-gray-600">{debitNote.customerSnapshot.email}</p>
               <p className="text-sm text-gray-600">{debitNote.customerSnapshot.phone}</p>
-              <p className="text-sm text-gray-600 mt-2">
-                {debitNote.customerSnapshot.address.street}<br />
-                {debitNote.customerSnapshot.address.city}, {debitNote.customerSnapshot.address.state} {debitNote.customerSnapshot.address.zipCode}<br />
-                {debitNote.customerSnapshot.address.country}
-              </p>
+              {debitNote.customerSnapshot.address && (
+                <p className="text-sm text-gray-600 mt-2">
+                  {debitNote.customerSnapshot.address.street && <>{debitNote.customerSnapshot.address.street}<br /></>}
+                  {(debitNote.customerSnapshot.address.city || debitNote.customerSnapshot.address.state || debitNote.customerSnapshot.address.zipCode) && (
+                    <>{[debitNote.customerSnapshot.address.city, debitNote.customerSnapshot.address.state, debitNote.customerSnapshot.address.zipCode].filter(Boolean).join(', ')}<br /></>
+                  )}
+                  {debitNote.customerSnapshot.address.country}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

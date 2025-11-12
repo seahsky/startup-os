@@ -135,23 +135,33 @@ export default function CustomerDetailPage(props: PageProps) {
         </Card>
 
         {/* Address */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              Address
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <p className="font-medium">{customer.address.street}</p>
-              <p className="text-gray-700">
-                {customer.address.city}, {customer.address.state} {customer.address.zipCode}
-              </p>
-              <p className="text-gray-700">{customer.address.country}</p>
-            </div>
-          </CardContent>
-        </Card>
+        {customer.address && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="w-5 h-5" />
+                Address
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {customer.address.street && (
+                  <p className="font-medium">{customer.address.street}</p>
+                )}
+                {(customer.address.city || customer.address.state || customer.address.zipCode) && (
+                  <p className="text-gray-700">
+                    {[customer.address.city, customer.address.state, customer.address.zipCode]
+                      .filter(Boolean)
+                      .join(', ')}
+                  </p>
+                )}
+                {customer.address.country && (
+                  <p className="text-gray-700">{customer.address.country}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Notes */}
         {customer.notes && (

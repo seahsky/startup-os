@@ -79,7 +79,7 @@ export default function CustomersPage() {
                       {customer.phone}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {customer.address.city}
+                      {customer.address?.city || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span

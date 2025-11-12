@@ -122,11 +122,15 @@ export default function InvoiceDetailPage(props: PageProps) {
               <p className="font-medium">{invoice.customerSnapshot.name}</p>
               <p className="text-sm text-gray-600">{invoice.customerSnapshot.email}</p>
               <p className="text-sm text-gray-600">{invoice.customerSnapshot.phone}</p>
-              <p className="text-sm text-gray-600 mt-2">
-                {invoice.customerSnapshot.address.street}<br />
-                {invoice.customerSnapshot.address.city}, {invoice.customerSnapshot.address.state} {invoice.customerSnapshot.address.zipCode}<br />
-                {invoice.customerSnapshot.address.country}
-              </p>
+              {invoice.customerSnapshot.address && (
+                <p className="text-sm text-gray-600 mt-2">
+                  {invoice.customerSnapshot.address.street && <>{invoice.customerSnapshot.address.street}<br /></>}
+                  {(invoice.customerSnapshot.address.city || invoice.customerSnapshot.address.state || invoice.customerSnapshot.address.zipCode) && (
+                    <>{[invoice.customerSnapshot.address.city, invoice.customerSnapshot.address.state, invoice.customerSnapshot.address.zipCode].filter(Boolean).join(', ')}<br /></>
+                  )}
+                  {invoice.customerSnapshot.address.country}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

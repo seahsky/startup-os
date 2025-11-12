@@ -111,11 +111,15 @@ export default function CreditNoteDetailPage(props: PageProps) {
               <p className="font-medium">{creditNote.customerSnapshot.name}</p>
               <p className="text-sm text-gray-600">{creditNote.customerSnapshot.email}</p>
               <p className="text-sm text-gray-600">{creditNote.customerSnapshot.phone}</p>
-              <p className="text-sm text-gray-600 mt-2">
-                {creditNote.customerSnapshot.address.street}<br />
-                {creditNote.customerSnapshot.address.city}, {creditNote.customerSnapshot.address.state} {creditNote.customerSnapshot.address.zipCode}<br />
-                {creditNote.customerSnapshot.address.country}
-              </p>
+              {creditNote.customerSnapshot.address && (
+                <p className="text-sm text-gray-600 mt-2">
+                  {creditNote.customerSnapshot.address.street && <>{creditNote.customerSnapshot.address.street}<br /></>}
+                  {(creditNote.customerSnapshot.address.city || creditNote.customerSnapshot.address.state || creditNote.customerSnapshot.address.zipCode) && (
+                    <>{[creditNote.customerSnapshot.address.city, creditNote.customerSnapshot.address.state, creditNote.customerSnapshot.address.zipCode].filter(Boolean).join(', ')}<br /></>
+                  )}
+                  {creditNote.customerSnapshot.address.country}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
