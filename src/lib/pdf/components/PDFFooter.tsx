@@ -20,13 +20,13 @@ export function PDFFooter({
       {(notes || termsAndConditions) && (
         <View style={pdfStyles.notesSection}>
           {notes && (
-            <View style={pdfStyles.mb16}>
+            <View style={pdfStyles.mb16} wrap={false}>
               <Text style={pdfStyles.notesTitle}>Notes:</Text>
               <Text style={pdfStyles.notesText}>{notes}</Text>
             </View>
           )}
           {termsAndConditions && (
-            <View>
+            <View wrap={false}>
               <Text style={pdfStyles.notesTitle}>Terms and Conditions:</Text>
               <Text style={pdfStyles.notesText}>{termsAndConditions}</Text>
             </View>

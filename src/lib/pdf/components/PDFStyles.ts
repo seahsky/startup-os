@@ -4,6 +4,7 @@ export const pdfStyles = StyleSheet.create({
   // Page and Layout
   page: {
     padding: 40,
+    paddingBottom: 100, // Reserve space for fixed footer
     fontSize: 10,
     fontFamily: 'Helvetica',
     color: '#1f2937', // gray-800
@@ -260,11 +261,8 @@ export const pdfStyles = StyleSheet.create({
 
   // Footer
   footer: {
-    position: 'absolute',
-    bottom: 30,
-    left: 40,
-    right: 40,
     paddingTop: 12,
+    paddingBottom: 12,
     borderTop: '1px solid #d1d5db',
     fontSize: 8,
     color: '#9ca3af', // gray-400
