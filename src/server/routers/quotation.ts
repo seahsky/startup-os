@@ -110,7 +110,6 @@ export const quotationRouter = router({
         address: customer.address,
         country: customer.country,
         taxIds: customer.taxIds,
-        taxId: customer.taxId, // Keep for backward compatibility
       };
 
       const quotation = {

@@ -1,6 +1,7 @@
 import { View, Text, Image } from '@react-pdf/renderer';
 import { pdfStyles } from './PDFStyles';
 import { formatDateForPDF } from '../utils/pdfHelpers';
+import { PDFTaxIds } from './PDFTaxIds';
 import type { Company } from '@/lib/types/document';
 
 interface PDFHeaderProps {
@@ -38,7 +39,7 @@ export function PDFHeader({
             <Text>{company.address.country}</Text>
             <Text style={pdfStyles.mt8}>Phone: {company.phone}</Text>
             <Text>Email: {company.email}</Text>
-            {company.taxId && <Text>Tax ID: {company.taxId}</Text>}
+            <PDFTaxIds country={company.country} taxIds={company.taxIds} />
           </View>
         </View>
 

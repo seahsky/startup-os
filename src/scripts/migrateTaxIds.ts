@@ -83,8 +83,7 @@ async function migrateCompanies(client: MongoClient): Promise<{
             taxIds,
             updatedAt: new Date(),
           },
-          // Keep taxId for backward compatibility (will be removed in future)
-          // $unset: { taxId: '' },
+          $unset: { taxId: '' },
         }
       );
 
@@ -171,8 +170,7 @@ async function migrateCustomers(client: MongoClient): Promise<{
             taxIds,
             updatedAt: new Date(),
           },
-          // Keep taxId for backward compatibility
-          // $unset: { taxId: '' },
+          $unset: { taxId: '' },
         }
       );
 

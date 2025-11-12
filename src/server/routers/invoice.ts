@@ -111,7 +111,6 @@ export const invoiceRouter = router({
         address: customer.address,
         country: customer.country,
         taxIds: customer.taxIds,
-        taxId: customer.taxId, // Keep for backward compatibility
       };
 
       const invoice = {

@@ -143,15 +143,6 @@ export class SnapshotAuditService {
       }
     }
 
-    // Compare legacy tax ID
-    if (oldSnapshot.taxId !== newSnapshot.taxId) {
-      changes.push({
-        field: 'taxId',
-        oldValue: oldSnapshot.taxId,
-        newValue: newSnapshot.taxId,
-      });
-    }
-
     return changes;
   }
 
@@ -171,7 +162,6 @@ export class SnapshotAuditService {
     };
     country: string;
     taxIds?: Record<string, string>;
-    taxId?: string;
   }): CustomerSnapshot {
     return {
       name: customer.name,
@@ -180,7 +170,6 @@ export class SnapshotAuditService {
       address: customer.address,
       country: customer.country,
       taxIds: customer.taxIds,
-      taxId: customer.taxId,
     };
   }
 }

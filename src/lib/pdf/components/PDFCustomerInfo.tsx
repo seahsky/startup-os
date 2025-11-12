@@ -1,5 +1,6 @@
 import { View, Text } from '@react-pdf/renderer';
 import { pdfStyles } from './PDFStyles';
+import { PDFTaxIds } from './PDFTaxIds';
 import type { CustomerSnapshot } from '@/lib/types/document';
 
 interface PDFCustomerInfoProps {
@@ -24,7 +25,7 @@ export function PDFCustomerInfo({ customer }: PDFCustomerInfoProps) {
         {customer.address?.country && <Text>{customer.address.country}</Text>}
         <Text style={pdfStyles.mt8}>Email: {customer.email}</Text>
         <Text>Phone: {customer.phone}</Text>
-        {customer.taxId && <Text>Tax ID: {customer.taxId}</Text>}
+        <PDFTaxIds country={customer.country} taxIds={customer.taxIds} />
       </View>
     </View>
   );

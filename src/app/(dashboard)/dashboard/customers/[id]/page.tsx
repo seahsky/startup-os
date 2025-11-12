@@ -107,13 +107,6 @@ export default function CustomerDetailPage(props: PageProps) {
             <CardTitle>Additional Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {customer.taxId && (
-              <div>
-                <p className="text-sm text-gray-600">Tax ID</p>
-                <p className="font-medium">{customer.taxId}</p>
-              </div>
-            )}
-
             {customer.contactPerson && (
               <div>
                 <p className="text-sm text-gray-600">Contact Person</p>
@@ -128,7 +121,7 @@ export default function CustomerDetailPage(props: PageProps) {
               </div>
             )}
 
-            {!customer.taxId && !customer.contactPerson && !customer.currency && (
+            {!customer.contactPerson && !customer.currency && (
               <p className="text-sm text-gray-500 italic">No additional details</p>
             )}
           </CardContent>

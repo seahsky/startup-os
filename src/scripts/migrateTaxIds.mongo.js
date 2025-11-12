@@ -1099,12 +1099,12 @@ async function migrateCompanies() {
         country = mapCountryNameToCode(company.address.country);
       }
 
-      // Default to US if we can't determine country
+      // Default to AU (Australia) if we can't determine country
       if (!country || !(country in COUNTRY_TAX_CONFIGS)) {
         print(
-          `⚠️  Company ${company._id}: Unknown country "${country || (company.address && company.address.country)}", defaulting to US`
+          `⚠️  Company ${company._id}: Unknown country "${country || (company.address && company.address.country)}", defaulting to AU`
         );
-        country = 'US';
+        country = 'AU';
       }
 
       // Migrate the legacy taxId
@@ -1119,8 +1119,7 @@ async function migrateCompanies() {
             taxIds: taxIds,
             updatedAt: new Date(),
           },
-          // Keep taxId for backward compatibility (will be removed in future)
-          // $unset: { taxId: '' },
+          $unset: { taxId: '' },
         }
       );
 
@@ -1178,12 +1177,12 @@ async function migrateCustomers() {
         country = mapCountryNameToCode(customer.address.country);
       }
 
-      // Default to US if we can't determine country
+      // Default to AU (Australia) if we can't determine country
       if (!country || !(country in COUNTRY_TAX_CONFIGS)) {
         print(
-          `⚠️  Customer ${customer._id}: Unknown country "${country || (customer.address && customer.address.country)}", defaulting to US`
+          `⚠️  Customer ${customer._id}: Unknown country "${country || (customer.address && customer.address.country)}", defaulting to AU`
         );
-        country = 'US';
+        country = 'AU';
       }
 
       // Migrate the legacy taxId
@@ -1198,8 +1197,7 @@ async function migrateCustomers() {
             taxIds: taxIds,
             updatedAt: new Date(),
           },
-          // Keep taxId for backward compatibility
-          // $unset: { taxId: '' },
+          $unset: { taxId: '' },
         }
       );
 

@@ -24,7 +24,6 @@ export default function EditCustomerPage(props: PageProps) {
     name: '',
     email: '',
     phone: '',
-    taxId: '',
     contactPerson: '',
     notes: '',
     currency: '',
@@ -50,7 +49,6 @@ export default function EditCustomerPage(props: PageProps) {
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
-        taxId: customer.taxId || '',
         contactPerson: customer.contactPerson || '',
         notes: customer.notes || '',
         currency: customer.currency || '',
@@ -152,23 +150,14 @@ export default function EditCustomerPage(props: PageProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <InputField
-                label="Phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-                placeholder="+1 (555) 123-4567"
-              />
-              <InputField
-                label="Tax ID"
-                name="taxId"
-                value={formData.taxId}
-                onChange={handleChange}
-                placeholder="TAX-123456"
-              />
-            </div>
+            <InputField
+              label="Phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              placeholder="+1 (555) 123-4567"
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <InputField

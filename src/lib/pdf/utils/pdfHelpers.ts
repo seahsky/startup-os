@@ -146,3 +146,72 @@ export function objectIdToString(id: any): string {
   if (id && typeof id.toString === 'function') return id.toString();
   return '';
 }
+
+/**
+ * Formatted tax ID type
+ */
+export interface FormattedTaxId {
+  label: string;
+  value: string;
+}
+
+/**
+ * Format tax IDs for PDF display based on country
+ *
+ * Takes a country code and taxIds object and returns an array of formatted
+ * tax IDs with proper labels and formatting for PDF display.
+ *
+ * @param country - ISO 3166-1 alpha-2 country code (e.g., 'US', 'AU', 'GB')
+ * @param taxIds - Object containing tax ID key-value pairs
+ * @returns Array of formatted tax IDs with labels and values
+ *
+ * @example
+ * formatTaxIdsForPDF('AU', { abn: '12345678901' })
+ * // Returns: [{ label: 'ABN', value: '12 345 678 901' }]
+ *
+ * @example
+ * formatTaxIdsForPDF('AU', { abn: '12345678901', acn: '123456789' })
+ * // Returns: [
+ * //   { label: 'ABN', value: '12 345 678 901' },
+ * //   { label: 'ACN', value: '123 456 789' }
+ * // ]
+ */
+export function formatTaxIdsForPDF(
+  country: string,
+  taxIds?: Record<string, string>
+): FormattedTaxId[] {
+  // Dynamic import to avoid circular dependencies
+  const { getCountryConfig, formatTaxId, getTaxIdDisplayLabel } = require('@/lib/utils/taxIdHelpers');
+
+  if (!taxIds || !country) return [];
+
+  const config = getCountryConfig(country);
+  if (!config) return [];
+
+  const formatted: FormattedTaxId[] = [];
+
+  // Add primary tax ID
+  const primaryFieldName = config.primaryId.fieldName;
+  const primaryValue = taxIds[primaryFieldName];
+  if (primaryValue) {
+    formatted.push({
+      label: getTaxIdDisplayLabel(country, primaryFieldName),
+      value: formatTaxId(country, primaryFieldName, primaryValue),
+    });
+  }
+
+  // Add secondary tax IDs if they exist
+  if (config.secondaryIds) {
+    for (const secondaryId of config.secondaryIds) {
+      const value = taxIds[secondaryId.fieldName];
+      if (value) {
+        formatted.push({
+          label: getTaxIdDisplayLabel(country, secondaryId.fieldName),
+          value: formatTaxId(country, secondaryId.fieldName, value),
+        });
+      }
+    }
+  }
+
+  return formatted;
+}
