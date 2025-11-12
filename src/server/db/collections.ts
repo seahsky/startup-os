@@ -10,6 +10,7 @@ import {
   DebitNote,
   PDFTemplate,
 } from '@/lib/types/document';
+import type { SnapshotAuditLog } from '@/lib/types/audit';
 
 export async function getCompaniesCollection(): Promise<Collection<Company>> {
   const db = await getDatabase();
@@ -49,6 +50,18 @@ export async function getDebitNotesCollection(): Promise<Collection<DebitNote>> 
 export async function getPDFTemplatesCollection(): Promise<Collection<PDFTemplate>> {
   const db = await getDatabase();
   return db.collection<PDFTemplate>('pdf_templates');
+}
+
+export async function getSnapshotAuditCollection(): Promise<Collection<SnapshotAuditLog>> {
+  const db = await getDatabase();
+  const collection = db.collection<SnapshotAuditLog>('snapshot_audit');
+
+  // Create indexes for efficient querying
+  await collection.createIndex({ documentId: 1, updatedAt: -1 });
+  await collection.createIndex({ customerId: 1, updatedAt: -1 });
+  await collection.createIndex({ updatedAt: -1 });
+
+  return collection;
 }
 
 // Users collection removed - using Clerk for authentication

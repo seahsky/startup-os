@@ -6,6 +6,7 @@ import { quotationRouter } from './quotation';
 import { invoiceRouter } from './invoice';
 import { creditNoteRouter } from './creditNote';
 import { debitNoteRouter } from './debitNote';
+import { snapshotAuditRouter } from './snapshotAudit';
 
 export const appRouter = router({
   customer: customerRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   invoice: invoiceRouter,
   creditNote: creditNoteRouter,
   debitNote: debitNoteRouter,
+  snapshotAudit: snapshotAuditRouter,
 });
 
 export type AppRouter = typeof appRouter;

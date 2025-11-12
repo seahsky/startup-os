@@ -68,10 +68,22 @@ export default function EditCustomerPage(props: PageProps) {
   }, [customer, isInitialized]);
 
   const updateMutation = trpc.customer.update.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      // Log documents updated count for user awareness
+      const count = (data as { documentsUpdated?: number }).documentsUpdated || 0;
+      if (count > 0) {
+        console.log(`Customer updated. ${count} draft document(s) refreshed with new customer information.`);
+        // You could add a toast notification here in the future
+      }
+
       // Invalidate cache to ensure fresh data is fetched
       await utils.customer.getById.invalidate({ id: params.id });
       await utils.customer.list.invalidate();
+
+      // Also invalidate document queries to show updated snapshots
+      await utils.invoice.list.invalidate();
+      await utils.quotation.list.invalidate();
+
       router.push(`/dashboard/customers/${params.id}`);
     },
   });

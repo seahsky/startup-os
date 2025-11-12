@@ -109,7 +109,30 @@ export const customerRouter = router({
         throw new Error('Customer not found');
       }
 
-      return result;
+      // Update snapshots in draft documents (non-blocking - don't fail customer update if this fails)
+      let documentsUpdated = 0;
+      try {
+        const { snapshotUpdateService } = await import('../services/snapshotUpdateService');
+        const { snapshotAuditService } = await import('../services/snapshotAuditService');
+
+        // Create snapshot from updated customer
+        const newSnapshot = snapshotAuditService.createSnapshot(result);
+
+        // Update all draft documents with the new snapshot
+        documentsUpdated = await snapshotUpdateService.updateDraftDocumentsForCustomer(
+          id,
+          newSnapshot,
+          ctx.userId
+        );
+      } catch (error) {
+        console.error('Failed to update document snapshots:', error);
+        // Don't throw - customer update should succeed even if snapshot update fails
+      }
+
+      return {
+        ...result,
+        documentsUpdated, // Include count of updated documents in response
+      };
     }),
 
   delete: protectedProcedure

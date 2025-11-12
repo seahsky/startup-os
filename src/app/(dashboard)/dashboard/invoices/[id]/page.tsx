@@ -5,7 +5,8 @@ import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { LoadingPage } from '@/components/shared/LoadingSpinner';
-import { ArrowLeft, Trash2, DollarSign } from 'lucide-react';
+import { ArrowLeft, Trash2, DollarSign, Clock } from 'lucide-react';
+import { SnapshotStatusBadge } from '@/components/shared/SnapshotStatusBadge';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/date';
 import {
@@ -30,6 +31,10 @@ export default function InvoiceDetailPage(props: PageProps) {
   });
 
   const { data: company, isLoading: isLoadingCompany } = trpc.company.get.useQuery();
+
+  const { data: auditHistory } = trpc.snapshotAudit.getHistory.useQuery({
+    documentId: params.id,
+  });
 
   const deleteMutation = trpc.invoice.delete.useMutation({
     onSuccess: () => {
@@ -115,7 +120,13 @@ export default function InvoiceDetailPage(props: PageProps) {
         {/* Customer Info */}
         <Card>
           <CardHeader>
-            <CardTitle>Customer Information</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>Customer Information</span>
+              <SnapshotStatusBadge
+                status={invoice.status}
+                hasAuditHistory={(auditHistory?.length || 0) > 0}
+              />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -132,6 +143,44 @@ export default function InvoiceDetailPage(props: PageProps) {
                 </p>
               )}
             </div>
+
+            {/* Audit History */}
+            {auditHistory && auditHistory.length > 0 && (
+              <div className="mt-6 pt-6 border-t">
+                <div className="flex items-center gap-2 mb-4">
+                  <Clock className="w-4 h-4 text-gray-500" />
+                  <h4 className="text-sm font-semibold text-gray-700">Snapshot Update History</h4>
+                </div>
+                <div className="space-y-3">
+                  {auditHistory.map((log) => (
+                    <div key={log._id} className="bg-gray-50 rounded-lg p-3 text-sm">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-gray-700">
+                          {log.reason === 'customer_update' ? 'Customer Updated' :
+                           log.reason === 'cascade_update' ? 'Cascaded from Invoice' :
+                           'Manual Refresh'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(log.updatedAt).toLocaleString()}
+                        </span>
+                      </div>
+                      {log.changes.length > 0 && (
+                        <div className="space-y-1">
+                          {log.changes.map((change, idx) => (
+                            <div key={idx} className="text-xs text-gray-600">
+                              <span className="font-medium">{change.field}:</span>{' '}
+                              <span className="line-through text-red-600">{change.oldValue || '(empty)'}</span>
+                              {' → '}
+                              <span className="text-green-600">{change.newValue || '(empty)'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
