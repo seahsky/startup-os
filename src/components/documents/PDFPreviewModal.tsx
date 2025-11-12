@@ -8,50 +8,62 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
 // Set worker for react-pdf
-// Using CDN approach for Next.js 14 compatibility (see implementation notes below)
-// CDN auto-matches version and avoids webpack/terser 'import.meta' build errors
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Using NPM-managed public folder approach (see implementation notes below)
+// Worker file copied automatically by postinstall script from node_modules
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 /*
  * IMPLEMENTATION NOTES:
  *
- * Why CDN approach instead of bundled worker?
+ * NPM-Based Worker Management (Current Approach)
  *
- * Next.js 14 with swcMinify:true (our config) has issues with the official approach:
- *   pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+ * This project uses a true npm-based solution for the PDF.js worker:
+ * - Worker file auto-copied from node_modules to public/ on npm install
+ * - Postinstall script: scripts/copy-pdf-worker.js
+ * - Worker version always matches pdfjs-dist package version
+ * - No external CDN dependencies required
  *
- * This causes build error: "'import.meta' cannot be used outside of module code"
- * when webpack/terser processes the worker file during production builds.
+ * BENEFITS:
+ * ✅ Fully self-hosted - no external dependencies
+ * ✅ Works offline - no internet required after initial load
+ * ✅ Auto-synced - worker version always matches pdfjs-dist
+ * ✅ Fast builds - works with Next.js 14 swcMinify: true
+ * ✅ Enterprise-ready - no CDN, suitable for airgap deployments
+ * ✅ Version control friendly - worker regenerated on npm install
  *
- * ALTERNATIVES CONSIDERED:
+ * HOW IT WORKS:
+ * 1. npm install triggers postinstall hook
+ * 2. scripts/copy-pdf-worker.js runs automatically
+ * 3. Copies node_modules/pdfjs-dist/build/pdf.worker.min.mjs to public/
+ * 4. Next.js serves public/pdf.worker.min.mjs as static file
+ * 5. react-pdf loads worker from /pdf.worker.min.mjs
  *
- * 1. ✅ CDN Approach (CURRENT - Recommended for Next.js 14)
- *    Pros: Works with swcMinify, simple, auto-version matching
- *    Cons: Requires internet, external dependency
- *    Best for: Internet-connected SaaS apps (like this invoicing platform)
+ * MAINTENANCE:
+ * - Worker updates automatically when pdfjs-dist is updated
+ * - No manual version management required
+ * - Worker can be gitignored (regenerated on install)
  *
- * 2. ⚠️ Official new URL() Approach
+ * ALTERNATIVE APPROACHES EVALUATED:
+ *
+ * 1. ❌ CDN Approach (unpkg.com)
+ *    Pros: Simple, zero configuration
+ *    Cons: External dependency, requires internet
+ *    Not chosen: Enterprise deployments need offline support
+ *
+ * 2. ❌ Official new URL() Approach
  *    Requires: swcMinify: false in next.config.js
- *    Pros: Self-hosted, no CDN
- *    Cons: Slower builds, larger bundles, worse performance
- *    Not recommended: Performance tradeoff too significant
+ *    Pros: Bundled automatically
+ *    Cons: Significantly slower builds, larger bundles
+ *    Not chosen: Performance tradeoff too significant
  *
- * 3. 🔧 Public Folder Approach (Alternative for offline/airgap)
- *    Implementation:
- *      - Copy node_modules/pdfjs-dist/build/pdf.worker.min.mjs to public/
- *      - Set: pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
- *      - Add npm script to auto-copy on install
- *    Pros: Self-hosted, works offline, fast
- *    Cons: More setup, manual version management
- *    Use if: Offline support or airgap deployment required
+ * 3. ❌ Webpack Plugin Approach
+ *    Requires: copy-webpack-plugin dependency
+ *    Pros: Integrated with build
+ *    Cons: Additional dependency, more complex webpack config
+ *    Not chosen: Postinstall script is simpler
  *
- * PRODUCTION CONSIDERATIONS:
- * - CDN reliability: unpkg.com has 99.9%+ uptime, backed by Cloudflare
- * - Privacy: Worker downloads from CDN, but PDF data stays client-side
- * - Performance: CDN often faster than self-hosted due to global edge cache
- * - Security: Using exact version match prevents supply chain attacks
- *
- * Current choice: CDN approach balances simplicity, performance, and Next.js compatibility.
+ * Current choice: NPM script + public folder balances automation,
+ * performance, and enterprise requirements with minimal complexity.
  */
 
 interface PDFPreviewModalProps {
