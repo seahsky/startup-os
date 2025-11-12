@@ -48,7 +48,7 @@ export function CompanyCreationForm() {
   return (
     <Card className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Welcome! Let's set up your company</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Welcome! Let&apos;s set up your company</h1>
         <p className="mt-2 text-sm text-gray-600">
           Tell us about your business to get started with your invoicing system.
         </p>
