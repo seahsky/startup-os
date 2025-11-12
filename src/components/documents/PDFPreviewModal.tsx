@@ -7,11 +7,64 @@ import { Button } from '@/components/ui/button';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Set worker for react-pdf - use local bundled worker instead of CDN
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url,
-).toString();
+// Set worker for react-pdf
+// Using NPM-managed public folder approach (see implementation notes below)
+// Worker file copied automatically by postinstall script from node_modules
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
+/*
+ * IMPLEMENTATION NOTES:
+ *
+ * NPM-Based Worker Management (Current Approach)
+ *
+ * This project uses a true npm-based solution for the PDF.js worker:
+ * - Worker file auto-copied from node_modules to public/ on npm install
+ * - Postinstall script: scripts/copy-pdf-worker.js
+ * - Worker version always matches pdfjs-dist package version
+ * - No external CDN dependencies required
+ *
+ * BENEFITS:
+ * ✅ Fully self-hosted - no external dependencies
+ * ✅ Works offline - no internet required after initial load
+ * ✅ Auto-synced - worker version always matches pdfjs-dist
+ * ✅ Fast builds - works with Next.js 14 swcMinify: true
+ * ✅ Enterprise-ready - no CDN, suitable for airgap deployments
+ * ✅ Version control friendly - worker regenerated on npm install
+ *
+ * HOW IT WORKS:
+ * 1. npm install triggers postinstall hook
+ * 2. scripts/copy-pdf-worker.js runs automatically
+ * 3. Copies node_modules/pdfjs-dist/build/pdf.worker.min.mjs to public/
+ * 4. Next.js serves public/pdf.worker.min.mjs as static file
+ * 5. react-pdf loads worker from /pdf.worker.min.mjs
+ *
+ * MAINTENANCE:
+ * - Worker updates automatically when pdfjs-dist is updated
+ * - No manual version management required
+ * - Worker can be gitignored (regenerated on install)
+ *
+ * ALTERNATIVE APPROACHES EVALUATED:
+ *
+ * 1. ❌ CDN Approach (unpkg.com)
+ *    Pros: Simple, zero configuration
+ *    Cons: External dependency, requires internet
+ *    Not chosen: Enterprise deployments need offline support
+ *
+ * 2. ❌ Official new URL() Approach
+ *    Requires: swcMinify: false in next.config.js
+ *    Pros: Bundled automatically
+ *    Cons: Significantly slower builds, larger bundles
+ *    Not chosen: Performance tradeoff too significant
+ *
+ * 3. ❌ Webpack Plugin Approach
+ *    Requires: copy-webpack-plugin dependency
+ *    Pros: Integrated with build
+ *    Cons: Additional dependency, more complex webpack config
+ *    Not chosen: Postinstall script is simpler
+ *
+ * Current choice: NPM script + public folder balances automation,
+ * performance, and enterprise requirements with minimal complexity.
+ */
 
 interface PDFPreviewModalProps {
   isOpen: boolean;

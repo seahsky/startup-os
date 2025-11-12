@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "db:seed": "tsx src/server/db/seed.ts"
+    "db:seed": "tsx src/server/db/seed.ts",
+    "postinstall": "node scripts/copy-pdf-worker.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.4",
