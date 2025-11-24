@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { TRPCProvider } from '@/lib/trpc/Provider';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Invoicing App - Professional Invoice Management',
@@ -18,6 +19,7 @@ export default function RootLayout({
       <html lang="en">
         <body className="font-sans antialiased">
           <TRPCProvider>{children}</TRPCProvider>
+          <Toaster position="top-right" richColors />
         </body>
       </html>
     </ClerkProvider>

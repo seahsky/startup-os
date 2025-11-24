@@ -9,6 +9,7 @@ import { InputField, TextareaField, SelectField } from '@/components/shared/Form
 import { CurrencySelect } from '@/components/shared/CurrencySelect';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function NewCustomerPage() {
   const router = useRouter();
@@ -33,12 +34,45 @@ export default function NewCustomerPage() {
 
   const createMutation = trpc.customer.create.useMutation({
     onSuccess: () => {
+      toast.success('Customer created successfully!');
       router.push('/dashboard/customers');
+    },
+    onError: (error) => {
+      console.error('Customer creation error:', error);
+
+      // Display detailed error information
+      const errorMessage = error.message || 'Failed to create customer';
+      const errorCode = error.data?.code;
+      const errorPath = error.data?.path;
+
+      toast.error('Failed to Create Customer', {
+        description: `${errorMessage}${errorCode ? ` (${errorCode})` : ''}${errorPath ? ` - Path: ${errorPath}` : ''}`,
+        duration: 6000,
+      });
+
+      // Log full error details for debugging
+      console.log('Full error details:', {
+        message: error.message,
+        code: errorCode,
+        data: error.data,
+        shape: error.shape,
+      });
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Debug: Log the form data being sent
+    console.log('Submitting customer data:', formData);
+    console.log('Form data structure:', {
+      hasCountry: !!formData.country,
+      countryValue: formData.country,
+      hasEmail: !!formData.email,
+      hasPhone: !!formData.phone,
+      hasName: !!formData.name,
+    });
+
     createMutation.mutate(formData);
   };
 
