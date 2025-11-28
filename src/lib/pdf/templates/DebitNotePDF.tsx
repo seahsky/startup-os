@@ -65,9 +65,10 @@ export function DebitNotePDF({ debitNote, company }: DebitNotePDFProps) {
           showTaxBreakdown={true}
         />
 
-        {/* Footer with Notes */}
+        {/* Footer with Notes and Payment Info */}
         <PDFFooter
           notes={debitNote.notes}
+          paymentInfo={company.paymentInfo}
           pageNumber={1}
           totalPages={1}
         />

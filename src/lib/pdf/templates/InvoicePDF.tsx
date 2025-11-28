@@ -91,10 +91,11 @@ export function InvoicePDF({ invoice, company }: InvoicePDFProps) {
           </View>
         )}
 
-        {/* Footer with Notes and Terms */}
+        {/* Footer with Notes, Terms, and Payment Info */}
         <PDFFooter
           notes={invoice.notes}
           termsAndConditions={invoice.termsAndConditions}
+          paymentInfo={company.paymentInfo}
           pageNumber={1}
           totalPages={1}
         />

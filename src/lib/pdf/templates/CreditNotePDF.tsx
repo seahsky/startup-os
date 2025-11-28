@@ -65,9 +65,10 @@ export function CreditNotePDF({ creditNote, company }: CreditNotePDFProps) {
           showTaxBreakdown={true}
         />
 
-        {/* Footer with Notes */}
+        {/* Footer with Notes and Payment Info */}
         <PDFFooter
           notes={creditNote.notes}
+          paymentInfo={company.paymentInfo}
           pageNumber={1}
           totalPages={1}
         />

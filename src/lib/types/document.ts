@@ -8,6 +8,13 @@ export interface Address {
   zipCode?: string;
 }
 
+export interface PaymentInfo {
+  bankName: string;
+  bsb: string; // Australian BSB, 6 digits stored without hyphen
+  accountNumber: string;
+  accountName: string;
+}
+
 export interface Company {
   _id: ObjectId;
   name: string;
@@ -19,6 +26,7 @@ export interface Company {
   logo?: string;
   currency: string;
   settings: CompanySettings;
+  paymentInfo?: PaymentInfo; // Optional Australian bank details for invoices
   createdAt: Date;
   updatedAt: Date;
 }

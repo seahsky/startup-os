@@ -336,4 +336,42 @@ export const pdfStyles = StyleSheet.create({
   textMuted: {
     color: '#6b7280',
   },
+
+  // Payment Information Styles
+  paymentInfoSection: {
+    marginTop: 16,
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: '#f8fafc', // slate-50
+    borderRadius: 4,
+    borderLeftWidth: 3,
+    borderLeftColor: '#3b82f6', // blue-500
+    borderLeftStyle: 'solid',
+  },
+  paymentInfoTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#1e40af', // blue-800
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  paymentInfoGrid: {
+    flexDirection: 'column',
+    gap: 4,
+  },
+  paymentInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  paymentInfoLabel: {
+    fontSize: 9,
+    color: '#64748b', // slate-500
+    width: 60,
+  },
+  paymentInfoValue: {
+    fontSize: 9,
+    color: '#1e293b', // slate-800
+    fontWeight: 'bold',
+  },
 });

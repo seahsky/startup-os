@@ -59,10 +59,11 @@ export function QuotationPDF({ quotation, company }: QuotationPDFProps) {
           showTaxBreakdown={true}
         />
 
-        {/* Footer with Notes and Terms */}
+        {/* Footer with Notes, Terms, and Payment Info */}
         <PDFFooter
           notes={quotation.notes}
           termsAndConditions={quotation.termsAndConditions}
+          paymentInfo={company.paymentInfo}
           pageNumber={1}
           totalPages={1}
         />

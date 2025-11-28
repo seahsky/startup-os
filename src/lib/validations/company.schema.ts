@@ -192,6 +192,28 @@ export const companySettingsUpdateSchema = z.object({
   defaultDueDays: z.number().min(1).optional(),
 });
 
+// Australian bank payment information schema
+// BSB: 6 digits, can be entered as XXX-XXX or XXXXXX, stored as XXXXXX
+export const paymentInfoSchema = z.object({
+  bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
+  bsb: z
+    .string()
+    .min(1, 'BSB is required')
+    .transform((val) => val.replace(/-/g, '')) // Remove hyphens for storage
+    .refine((val) => /^\d{6}$/.test(val), {
+      message: 'BSB must be exactly 6 digits',
+    }),
+  accountNumber: z
+    .string()
+    .min(1, 'Account number is required')
+    .max(20, 'Account number too long')
+    .refine((val) => /^\d+$/.test(val), {
+      message: 'Account number must contain only digits',
+    }),
+  accountName: z.string().min(1, 'Account name is required').max(100, 'Account name too long'),
+});
+
 export type CompanyCreateInput = z.infer<typeof companyCreateSchema>;
 export type CompanyUpdateInput = z.infer<typeof companyUpdateSchema>;
 export type CompanySettingsUpdateInput = z.infer<typeof companySettingsUpdateSchema>;
+export type PaymentInfoInput = z.infer<typeof paymentInfoSchema>;

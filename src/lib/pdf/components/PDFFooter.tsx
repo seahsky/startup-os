@@ -1,9 +1,12 @@
 import { View, Text } from '@react-pdf/renderer';
 import { pdfStyles } from './PDFStyles';
+import { PDFPaymentInfo } from './PDFPaymentInfo';
+import type { PaymentInfo } from '@/lib/types/document';
 
 interface PDFFooterProps {
   notes?: string;
   termsAndConditions?: string;
+  paymentInfo?: PaymentInfo;
   pageNumber?: number;
   totalPages?: number;
 }
@@ -11,6 +14,7 @@ interface PDFFooterProps {
 export function PDFFooter({
   notes,
   termsAndConditions,
+  paymentInfo,
   pageNumber,
   totalPages,
 }: PDFFooterProps) {
@@ -33,6 +37,9 @@ export function PDFFooter({
           )}
         </View>
       )}
+
+      {/* Payment Information Section */}
+      {paymentInfo && <PDFPaymentInfo paymentInfo={paymentInfo} />}
 
       {/* Page Footer */}
       <View style={pdfStyles.footer} fixed>

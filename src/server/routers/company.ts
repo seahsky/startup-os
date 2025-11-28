@@ -5,7 +5,8 @@ import { getCompaniesCollection } from '../db/collections';
 import {
   companyCreateSchema,
   companyUpdateSchema,
-  companySettingsUpdateSchema
+  companySettingsUpdateSchema,
+  paymentInfoSchema,
 } from '@/lib/validations/company.schema';
 import { assignUserToCompany } from '@/lib/clerk-utils';
 import type { Company } from '@/lib/types/document';
@@ -139,4 +140,52 @@ export const companyRouter = router({
 
       return result;
     }),
+
+  updatePaymentInfo: protectedProcedure
+    .input(paymentInfoSchema)
+    .mutation(async ({ input, ctx }) => {
+      const companies = await getCompaniesCollection();
+
+      const result = await companies.findOneAndUpdate(
+        { _id: new ObjectId(ctx.companyId) },
+        {
+          $set: {
+            paymentInfo: input,
+            updatedAt: new Date(),
+          },
+        },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Company not found',
+        });
+      }
+
+      return result;
+    }),
+
+  clearPaymentInfo: protectedProcedure.mutation(async ({ ctx }) => {
+    const companies = await getCompaniesCollection();
+
+    const result = await companies.findOneAndUpdate(
+      { _id: new ObjectId(ctx.companyId) },
+      {
+        $unset: { paymentInfo: '' },
+        $set: { updatedAt: new Date() },
+      },
+      { returnDocument: 'after' }
+    );
+
+    if (!result) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Company not found',
+      });
+    }
+
+    return result;
+  }),
 });
