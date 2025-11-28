@@ -1,6 +1,6 @@
-import { View, Text } from '@react-pdf/renderer';
-import { pdfStyles } from './PDFStyles';
-import type { PaymentInfo } from '@/lib/types/document';
+import { View, Text } from "@react-pdf/renderer";
+import { pdfStyles } from "./PDFStyles";
+import type { PaymentInfo } from "@/lib/types/document";
 
 interface PDFPaymentInfoProps {
   paymentInfo: PaymentInfo;
@@ -26,12 +26,16 @@ export function PDFPaymentInfo({ paymentInfo }: PDFPaymentInfoProps) {
           <Text style={pdfStyles.paymentInfoValue}>{formattedBsb}</Text>
         </View>
         <View style={pdfStyles.paymentInfoRow}>
-          <Text style={pdfStyles.paymentInfoLabel}>Account:</Text>
-          <Text style={pdfStyles.paymentInfoValue}>{paymentInfo.accountNumber}</Text>
+          <Text style={pdfStyles.paymentInfoLabel}>Account Number:</Text>
+          <Text style={pdfStyles.paymentInfoValue}>
+            {paymentInfo.accountNumber}
+          </Text>
         </View>
         <View style={pdfStyles.paymentInfoRow}>
           <Text style={pdfStyles.paymentInfoLabel}>Name:</Text>
-          <Text style={pdfStyles.paymentInfoValue}>{paymentInfo.accountName}</Text>
+          <Text style={pdfStyles.paymentInfoValue}>
+            {paymentInfo.accountName}
+          </Text>
         </View>
       </View>
     </View>
