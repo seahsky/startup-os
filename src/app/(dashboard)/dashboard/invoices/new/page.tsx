@@ -1,218 +1,65 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { trpc } from '@/lib/trpc/client';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { InputField, TextareaField, SelectField } from '@/components/shared/FormField';
-import { CustomerSelector } from '@/components/customers/CustomerSelector';
-import { CurrencySelect } from '@/components/shared/CurrencySelect';
-import { ItemsTable, DocumentItem } from '@/components/documents/ItemsTable';
-import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useAuth } from '@clerk/nextjs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { FileText, ArrowRight } from 'lucide-react';
 
+/**
+ * Invoice creation is disabled - invoices must be created by converting quotations.
+ * This ensures unified document numbering: QUO-0005 -> INV-0005
+ */
 export default function NewInvoicePage() {
   const router = useRouter();
-  const { userId } = useAuth();
-  const [formData, setFormData] = useState({
-    customerId: '',
-    date: new Date().toISOString().split('T')[0],
-    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    items: [] as DocumentItem[],
-    currency: '',
-    notes: '',
-    termsAndConditions: 'Payment is due within 30 days. Late payments may incur additional charges.',
-    status: 'draft' as 'draft' | 'sent',
-  });
 
-  // Fetch company for default currency
-  const { data: company } = trpc.company.get.useQuery();
-
-  // Fetch customer when selected to get their preferred currency
-  const { data: selectedCustomer } = trpc.customer.getById.useQuery(
-    { id: formData.customerId },
-    { enabled: !!formData.customerId }
-  );
-
-  // Update currency based on hierarchy: customer > company > default
+  // Auto-redirect after 5 seconds
   useEffect(() => {
-    if (selectedCustomer?.currency) {
-      setFormData(prev => ({ ...prev, currency: selectedCustomer.currency! }));
-    } else if (company?.currency && !formData.currency) {
-      setFormData(prev => ({ ...prev, currency: company.currency }));
-    }
-  }, [selectedCustomer, company, formData.currency]);
-
-  const createMutation = trpc.invoice.create.useMutation({
-    onSuccess: (data) => {
-      router.push('/dashboard/invoices');
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.customerId) {
-      alert('Please select a customer');
-      return;
-    }
-
-    if (formData.items.length === 0) {
-      alert('Please add at least one item');
-      return;
-    }
-
-    if (!formData.currency) {
-      alert('Please select a currency');
-      return;
-    }
-
-    createMutation.mutate({
-      customerId: formData.customerId,
-      date: new Date(formData.date),
-      dueDate: new Date(formData.dueDate),
-      items: formData.items,
-      currency: formData.currency,
-      notes: formData.notes,
-      termsAndConditions: formData.termsAndConditions,
-      status: formData.status,
-    });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    const timer = setTimeout(() => {
+      router.push('/dashboard/quotations');
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [router]);
 
   return (
-    <div className="space-y-4 lg:space-y-6">
-      <div className="flex items-center gap-3 lg:gap-4">
-        <Link href="/dashboard/invoices">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-xl lg:text-3xl font-bold text-gray-900">New Invoice</h1>
-          <p className="text-sm lg:text-base text-gray-600 mt-1">Create a new invoice for your customer</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Create Invoice</h1>
+        <p className="text-gray-600 mt-1">Invoices are created from quotations</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
-        {/* Customer & Date Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg lg:text-xl">Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <CustomerSelector
-              value={formData.customerId}
-              onChange={(customerId) => setFormData(prev => ({ ...prev, customerId }))}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <InputField
-                label="Invoice Date"
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-              />
-              <InputField
-                label="Due Date"
-                name="dueDate"
-                type="date"
-                value={formData.dueDate}
-                onChange={handleChange}
-                required
-              />
-              <SelectField
-                label="Status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                options={[
-                  { value: 'draft', label: 'Draft' },
-                  { value: 'sent', label: 'Sent' },
-                ]}
-              />
-            </div>
-
-            <CurrencySelect
-              value={formData.currency}
-              onChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
-              required
-            />
-            <p className="text-sm text-gray-500 -mt-2">
-              {selectedCustomer?.currency
-                ? 'Using customer preferred currency'
-                : company?.currency
-                ? 'Using company default currency'
-                : 'Please select a currency'}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Line Items */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg lg:text-xl">Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
-              <ItemsTable
-                items={formData.items}
-                onChange={(items) => setFormData(prev => ({ ...prev, items }))}
-                currency={formData.currency}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Notes & Terms */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg lg:text-xl">Additional Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <TextareaField
-              label="Notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Internal notes about this invoice..."
-              rows={3}
-            />
-            <TextareaField
-              label="Terms & Conditions"
-              name="termsAndConditions"
-              value={formData.termsAndConditions}
-              onChange={handleChange}
-              placeholder="Payment terms and conditions..."
-              rows={4}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Actions */}
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-          <Link href="/dashboard/invoices" className="w-full sm:w-auto">
-            <Button type="button" variant="outline" className="w-full sm:w-auto">
-              Cancel
-            </Button>
-          </Link>
-          <Button
-            type="submit"
-            disabled={createMutation.isPending}
-            className="w-full sm:w-auto"
-          >
-            {createMutation.isPending ? 'Creating...' : 'Create Invoice'}
-          </Button>
-        </div>
-      </form>
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          <FileText className="w-16 h-16 text-purple-500 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Invoices Come From Quotations
+          </h3>
+          <p className="text-gray-600 text-center max-w-md mb-6">
+            To ensure unified document numbering, invoices must be created by converting a quotation.
+            <br />
+            <span className="text-sm text-gray-500">
+              (QUO-0005 converts to INV-0005)
+            </span>
+          </p>
+          <div className="flex gap-3">
+            <Link href="/dashboard/quotations/new">
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                Create Quotation
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/dashboard/quotations">
+              <Button variant="outline">
+                View Quotations
+              </Button>
+            </Link>
+          </div>
+          <p className="text-xs text-gray-400 mt-4">
+            Redirecting to quotations in 5 seconds...
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

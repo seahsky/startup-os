@@ -79,7 +79,7 @@ export const debitNoteRouter = router({
       const debitNotes = await getDebitNotesCollection();
       const invoices = await getInvoicesCollection();
 
-      // Get invoice for customer snapshot
+      // Get invoice for customer snapshot and DN numbering
       const invoice = await invoices.findOne({
         _id: new ObjectId(input.invoiceId),
         companyId: new ObjectId(ctx.companyId),
@@ -89,10 +89,17 @@ export const debitNoteRouter = router({
         throw new Error('Invoice not found');
       }
 
-      // Generate document number
-      const documentNumber = await documentNumberingService.getNextNumber(
+      // Atomically increment invoice's debitNoteCount and get the new sequence number
+      const currentCount = invoice.debitNoteCount ?? 0;
+      const newSequence = currentCount + 1;
+
+      // Generate document number derived from invoice
+      // e.g., INV-0005 -> DN-0005-1
+      const documentNumber = await documentNumberingService.getLinkedDocumentNumber(
         ctx.companyId,
-        'debit_note'
+        invoice.documentNumber,
+        'debit_note',
+        newSequence
       );
 
       // Enrich items with calculations
@@ -123,6 +130,12 @@ export const debitNoteRouter = router({
       };
 
       await debitNotes.insertOne(debitNote);
+
+      // Update invoice's debitNoteCount
+      await invoices.updateOne(
+        { _id: new ObjectId(input.invoiceId) },
+        { $set: { debitNoteCount: newSequence, updatedAt: new Date() } }
+      );
 
       return debitNote;
     }),

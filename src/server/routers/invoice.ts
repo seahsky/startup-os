@@ -1,17 +1,14 @@
 import { z } from 'zod';
 import { ObjectId } from 'mongodb';
-import { router, publicProcedure, protectedProcedure } from '../trpc';
-import { getInvoicesCollection, getCustomersCollection, getCompaniesCollection } from '../db/collections';
+import { router, protectedProcedure } from '../trpc';
+import { getInvoicesCollection } from '../db/collections';
 import {
-  invoiceCreateSchema,
   invoiceUpdateSchema,
   invoiceListSchema,
   paymentRecordSchema,
 } from '@/lib/validations/invoice.schema';
-import { documentNumberingService } from '../services/documentNumbering';
 import { taxCalculationService } from '../services/taxCalculation';
 import { paymentService } from '../services/paymentService';
-import { CustomerSnapshot } from '@/lib/types/document';
 
 export const invoiceRouter = router({
   list: protectedProcedure
@@ -75,75 +72,9 @@ export const invoiceRouter = router({
       return invoice;
     }),
 
-  create: protectedProcedure
-    .input(invoiceCreateSchema)
-    .mutation(async ({ input, ctx }) => {
-      const invoices = await getInvoicesCollection();
-      const customers = await getCustomersCollection();
-
-      // Get customer for snapshot
-      const customer = await customers.findOne({
-        _id: new ObjectId(input.customerId),
-        companyId: new ObjectId(ctx.companyId),
-      });
-
-      if (!customer) {
-        throw new Error('Customer not found');
-      }
-
-      // Generate document number
-      const documentNumber = await documentNumberingService.getNextNumber(
-        ctx.companyId,
-        'invoice'
-      );
-
-      // Enrich items with calculations
-      const enrichedItems = taxCalculationService.enrichItemsWithCalculations(input.items);
-
-      // Calculate document totals
-      const totals = taxCalculationService.calculateDocument(enrichedItems);
-
-      // Create customer snapshot
-      const customerSnapshot: CustomerSnapshot = {
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        address: customer.address,
-        country: customer.country,
-        taxIds: customer.taxIds,
-      };
-
-      const invoice = {
-        _id: new ObjectId(),
-        companyId: new ObjectId(ctx.companyId),
-        documentNumber,
-        customerId: new ObjectId(input.customerId),
-        customerSnapshot,
-        quotationId: input.quotationId ? new ObjectId(input.quotationId) : undefined,
-        date: input.date,
-        dueDate: input.dueDate,
-        items: enrichedItems,
-        subtotal: totals.subtotal,
-        totalTax: totals.totalTax,
-        total: totals.total,
-        currency: input.currency,
-        notes: input.notes,
-        termsAndConditions: input.termsAndConditions,
-        status: input.status,
-        paymentStatus: {
-          amountPaid: 0,
-          amountDue: totals.total,
-          payments: [],
-        },
-        createdBy: ctx.userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      await invoices.insertOne(invoice);
-
-      return invoice;
-    }),
+  // NOTE: Direct invoice creation is disabled.
+  // Invoices must be created by converting quotations via quotation.convertToInvoice
+  // This ensures unified document numbering where QUO-0005 converts to INV-0005
 
   update: protectedProcedure
     .input(invoiceUpdateSchema)

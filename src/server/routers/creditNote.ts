@@ -79,7 +79,7 @@ export const creditNoteRouter = router({
       const creditNotes = await getCreditNotesCollection();
       const invoices = await getInvoicesCollection();
 
-      // Get invoice for customer snapshot
+      // Get invoice for customer snapshot and CN numbering
       const invoice = await invoices.findOne({
         _id: new ObjectId(input.invoiceId),
         companyId: new ObjectId(ctx.companyId),
@@ -89,10 +89,17 @@ export const creditNoteRouter = router({
         throw new Error('Invoice not found');
       }
 
-      // Generate document number
-      const documentNumber = await documentNumberingService.getNextNumber(
+      // Atomically increment invoice's creditNoteCount and get the new sequence number
+      const currentCount = invoice.creditNoteCount ?? 0;
+      const newSequence = currentCount + 1;
+
+      // Generate document number derived from invoice
+      // e.g., INV-0005 -> CN-0005-1
+      const documentNumber = await documentNumberingService.getLinkedDocumentNumber(
         ctx.companyId,
-        'credit_note'
+        invoice.documentNumber,
+        'credit_note',
+        newSequence
       );
 
       // Enrich items with calculations
@@ -123,6 +130,12 @@ export const creditNoteRouter = router({
       };
 
       await creditNotes.insertOne(creditNote);
+
+      // Update invoice's creditNoteCount
+      await invoices.updateOne(
+        { _id: new ObjectId(input.invoiceId) },
+        { $set: { creditNoteCount: newSequence, updatedAt: new Date() } }
+      );
 
       return creditNote;
     }),

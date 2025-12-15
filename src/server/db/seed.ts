@@ -41,14 +41,16 @@ async function seed() {
       },
       currency: 'USD',
       settings: {
+        // Document prefixes
         invoicePrefix: 'INV-',
         quotationPrefix: 'QUO-',
         creditNotePrefix: 'CN-',
         debitNotePrefix: 'DN-',
-        nextInvoiceNumber: 1001,
+        // Only quotation has an independent counter
+        // Invoice number is derived from quotation when converted (QUO-0005 -> INV-0005)
+        // CN/DN numbers are derived from their linked invoice (INV-0005 -> CN-0005-1)
         nextQuotationNumber: 1001,
-        nextCreditNoteNumber: 1001,
-        nextDebitNoteNumber: 1001,
+        // General settings
         defaultTaxRate: 10,
         paymentTerms: 'Net 30',
         defaultDueDays: 30,

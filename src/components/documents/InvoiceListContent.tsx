@@ -2,7 +2,7 @@
 
 import { trpc } from '@/lib/trpc/client';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { formatDate } from '@/lib/utils/date';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import type { CurrencyCode } from '@/lib/types/currency';
@@ -30,13 +30,13 @@ export function InvoiceListContent({ showHeader = true, limit = 20 }: InvoiceLis
               Manage your invoices and track payments
             </p>
           </div>
-          {/* Desktop only - mobile uses bottom nav Add button */}
+          {/* Desktop only - Invoices are created by converting quotations */}
           <Link
-            href="/dashboard/invoices/new"
-            className="hidden lg:inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            href="/dashboard/quotations"
+            className="hidden lg:inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            New Invoice
+            <FileText className="w-4 h-4 mr-2" />
+            Convert Quotation
           </Link>
         </div>
       )}
@@ -49,12 +49,15 @@ export function InvoiceListContent({ showHeader = true, limit = 20 }: InvoiceLis
       {/* Empty State */}
       {!isLoading && data?.items.length === 0 && (
         <div className="bg-white rounded-lg p-8 text-center">
-          <p className="text-gray-500 mb-4">No invoices yet</p>
+          <p className="text-gray-500 mb-2">No invoices yet</p>
+          <p className="text-sm text-gray-400 mb-4">
+            Create a quotation first, then convert it to an invoice
+          </p>
           <Link
-            href="/dashboard/invoices/new"
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            href="/dashboard/quotations/new"
+            className="text-purple-600 hover:text-purple-700 font-medium"
           >
-            Create your first invoice
+            Create a quotation
           </Link>
         </div>
       )}

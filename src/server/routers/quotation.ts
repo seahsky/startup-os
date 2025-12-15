@@ -90,10 +90,9 @@ export const quotationRouter = router({
         throw new Error('Customer not found');
       }
 
-      // Generate document number
-      const documentNumber = await documentNumberingService.getNextNumber(
-        ctx.companyId,
-        'quotation'
+      // Generate document number (quotation is the only independent counter)
+      const documentNumber = await documentNumberingService.getNextQuotationNumber(
+        ctx.companyId
       );
 
       // Enrich items with calculations

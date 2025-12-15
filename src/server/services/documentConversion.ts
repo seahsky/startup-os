@@ -23,10 +23,11 @@ export class DocumentConversionService {
       throw new Error('Quotation already converted to invoice');
     }
 
-    // Generate new invoice number
-    const documentNumber = await documentNumberingService.getNextNumber(
+    // Generate invoice number from quotation number (same base number)
+    // e.g., QUO-0005 -> INV-0005
+    const documentNumber = await documentNumberingService.generateInvoiceNumberFromQuotation(
       quotation.companyId.toString(),
-      'invoice'
+      quotation.documentNumber
     );
 
     // Get company settings for due date
@@ -39,7 +40,7 @@ export class DocumentConversionService {
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + company.settings.defaultDueDays);
 
-    // Create invoice
+    // Create invoice with CN/DN counters initialized to 0
     const invoice: Invoice = {
       _id: new ObjectId(),
       companyId: quotation.companyId,
@@ -62,6 +63,8 @@ export class DocumentConversionService {
         amountDue: quotation.total,
         payments: [],
       },
+      creditNoteCount: 0,  // Initialize CN counter
+      debitNoteCount: 0,   // Initialize DN counter
       createdBy: userId,
       createdAt: new Date(),
       updatedAt: new Date(),

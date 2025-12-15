@@ -66,18 +66,13 @@ export const documentTypes: DocumentType[] = [
     icon: FileText,
     color: 'text-purple-600',
   },
-  {
-    id: 'invoice',
-    name: 'New Invoice',
-    description: 'Bill a customer',
-    href: '/dashboard/invoices/new',
-    icon: FileCheck,
-    color: 'text-blue-600',
-  },
+  // NOTE: Direct invoice creation is disabled.
+  // Invoices are created by converting quotations (quotation.convertToInvoice)
+  // This ensures unified numbering: QUO-0005 -> INV-0005
   {
     id: 'credit-note',
     name: 'New Credit Note',
-    description: 'Issue a credit',
+    description: 'Issue credit for an invoice',
     href: '/dashboard/credit-notes/new',
     icon: FileX,
     color: 'text-red-600',

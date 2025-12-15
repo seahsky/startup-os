@@ -9,14 +9,16 @@ import {
 } from '../utils/taxIdHelpers';
 
 export const companySettingsSchema = z.object({
+  // Document prefixes (used for all document types)
   invoicePrefix: z.string().min(1, 'Invoice prefix is required').default('INV-'),
   quotationPrefix: z.string().min(1, 'Quotation prefix is required').default('QUO-'),
   creditNotePrefix: z.string().min(1, 'Credit note prefix is required').default('CN-'),
   debitNotePrefix: z.string().min(1, 'Debit note prefix is required').default('DN-'),
-  nextInvoiceNumber: z.number().min(1).default(1001),
+  // Only quotation has an independent counter
+  // Invoice number is derived from quotation when converted
+  // CN/DN numbers are derived from their linked invoice
   nextQuotationNumber: z.number().min(1).default(1001),
-  nextCreditNoteNumber: z.number().min(1).default(1001),
-  nextDebitNoteNumber: z.number().min(1).default(1001),
+  // General settings
   defaultTaxRate: z.number().min(0).max(100).default(10),
   paymentTerms: z.string().min(1).default('Net 30'),
   defaultDueDays: z.number().min(1).default(30),
@@ -179,14 +181,14 @@ export const companyUpdateSchema = z
   );
 
 export const companySettingsUpdateSchema = z.object({
+  // Document prefixes
   invoicePrefix: z.string().min(1, 'Invoice prefix is required').optional(),
   quotationPrefix: z.string().min(1, 'Quotation prefix is required').optional(),
   creditNotePrefix: z.string().min(1, 'Credit note prefix is required').optional(),
   debitNotePrefix: z.string().min(1, 'Debit note prefix is required').optional(),
-  nextInvoiceNumber: z.number().min(1).optional(),
+  // Only quotation counter is configurable (invoice/CN/DN are derived)
   nextQuotationNumber: z.number().min(1).optional(),
-  nextCreditNoteNumber: z.number().min(1).optional(),
-  nextDebitNoteNumber: z.number().min(1).optional(),
+  // General settings
   defaultTaxRate: z.number().min(0).max(100).optional(),
   paymentTerms: z.string().min(1).optional(),
   defaultDueDays: z.number().min(1).optional(),

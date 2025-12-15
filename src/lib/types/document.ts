@@ -32,14 +32,16 @@ export interface Company {
 }
 
 export interface CompanySettings {
+  // Document prefixes
   invoicePrefix: string;
   quotationPrefix: string;
   creditNotePrefix: string;
   debitNotePrefix: string;
-  nextInvoiceNumber: number;
+  // Only quotation has an independent counter
+  // Invoice number is derived from quotation when converted
+  // CN/DN numbers are derived from their linked invoice
   nextQuotationNumber: number;
-  nextCreditNoteNumber: number;
-  nextDebitNoteNumber: number;
+  // General settings
   defaultTaxRate: number;
   paymentTerms: string;
   defaultDueDays: number;
@@ -155,6 +157,8 @@ export interface Invoice {
   termsAndConditions?: string;
   status: InvoiceStatus;
   paymentStatus: PaymentStatus;
+  creditNoteCount: number;  // Track how many credit notes issued for this invoice
+  debitNoteCount: number;   // Track how many debit notes issued for this invoice
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
