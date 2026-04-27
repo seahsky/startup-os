@@ -1,12 +1,10 @@
 'use client';
 
 import { trpc } from '@/lib/trpc/client';
-import { FileText, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import type { CurrencyCode } from '@/lib/types/currency';
 
 export default function DashboardPage() {
-  // Example: Fetch recent invoices
   const { data: invoices, isLoading } = trpc.invoice.list.useQuery({
     page: 1,
     limit: 5,
@@ -16,39 +14,6 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Overview of your invoicing activity</p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Revenue"
-          value="$0.00"
-          icon={<DollarSign className="w-5 h-5" />}
-          trend="+0%"
-          trendUp={true}
-        />
-        <StatCard
-          title="Outstanding"
-          value="$0.00"
-          icon={<FileText className="w-5 h-5" />}
-          trend="0 invoices"
-        />
-        <StatCard
-          title="Overdue"
-          value="$0.00"
-          icon={<AlertCircle className="w-5 h-5" />}
-          trend="0 invoices"
-          variant="danger"
-        />
-        <StatCard
-          title="Paid This Month"
-          value="$0.00"
-          icon={<CheckCircle className="w-5 h-5" />}
-          trend="+0%"
-          trendUp={true}
-          variant="success"
-        />
       </div>
 
       {/* Recent Invoices */}
@@ -97,45 +62,6 @@ export default function DashboardPage() {
           <QuickActionButton href="/dashboard/customers/new" label="New Customer" />
           <QuickActionButton href="/dashboard/products/new" label="New Product" />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function StatCard({
-  title,
-  value,
-  icon,
-  trend,
-  trendUp,
-  variant = 'default',
-}: {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  trend?: string;
-  trendUp?: boolean;
-  variant?: 'default' | 'success' | 'danger';
-}) {
-  const variantStyles = {
-    default: 'bg-blue-50 text-blue-600',
-    success: 'bg-green-50 text-green-600',
-    danger: 'bg-red-50 text-red-600',
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-gray-600 text-sm font-medium">{title}</span>
-        <div className={`p-2 rounded-lg ${variantStyles[variant]}`}>{icon}</div>
-      </div>
-      <div className="space-y-1">
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        {trend && (
-          <p className={`text-sm ${trendUp ? 'text-green-600' : 'text-gray-600'}`}>
-            {trend}
-          </p>
-        )}
       </div>
     </div>
   );

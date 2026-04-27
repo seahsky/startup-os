@@ -36,7 +36,7 @@ export function MobileBottomNav({ pathname }: MobileBottomNavProps) {
                   className="relative flex flex-col items-center justify-center"
                   aria-label={item.name}
                 >
-                  <div className="absolute -top-6 flex items-center justify-center w-14 h-14 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
+                  <div className="absolute -top-6 flex items-center justify-center w-14 h-14 bg-blue-600 rounded-full hover:bg-blue-700 transition-colors">
                     <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
                   </div>
                   <span className="mt-6 text-[10px] font-medium text-gray-600">
