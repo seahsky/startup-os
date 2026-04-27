@@ -36,9 +36,9 @@ export function MobileDocumentMenu({ isOpen, onClose }: MobileDocumentMenuProps)
 
       {/* Modal */}
       <div className="fixed inset-x-0 bottom-0 z-50 animate-in slide-in-from-bottom duration-300">
-        <div className="bg-white rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto pb-safe">
+        <div className="bg-white rounded-t-xl shadow-lg max-h-[85vh] overflow-y-auto pb-safe">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-3xl">
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Create New Document</h2>
               <button
