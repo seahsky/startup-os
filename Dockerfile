@@ -1,12 +1,14 @@
 # syntax=docker/dockerfile:1.7
 
 FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY scripts/copy-pdf-worker.js ./scripts/
 RUN npm ci
 
 FROM node:20-alpine AS builder
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_CLERK_SIGN_IN_URL
